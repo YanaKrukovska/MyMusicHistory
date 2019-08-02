@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/list_of_listens"
+            android:icon="@drawable/ic_listens_foreground"
+            android:title="@string/menu_listens" />
+        <item
+            android:id="@+id/nav_top_artists"
+            android:icon="@drawable/ic_menu_artist_foreground"
+            android:title="@string/menu_top_artists" />
+        <item
+            android:id="@+id/nav_top_albums"
+            android:icon="@drawable/ic_menu_album_foreground"
+            android:title="@string/menu_top_albums" />
+        <item
+            android:id="@+id/nav_top_songs"
+            android:icon="@drawable/ic_menu_song_foreground"
+            android:title="@string/menu_top_songs" />
+
+    </group>
+
+    <item android:title="">
+        <menu>
+
+        </menu>
+    </item>
+
+
+
+</menu>
