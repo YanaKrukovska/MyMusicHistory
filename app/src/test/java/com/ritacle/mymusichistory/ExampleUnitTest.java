@@ -1,4 +1,4 @@
-package com.example.mymusichistory;
+package com.ritacle.mymusichistory;
 
 import org.junit.Test;
 

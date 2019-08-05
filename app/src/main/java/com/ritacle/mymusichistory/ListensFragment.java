@@ -1,4 +1,4 @@
-package com.example.mymusichistory;
+package com.ritacle.mymusichistory;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +10,8 @@ import android.app.ListFragment;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.ritacle.mymusichistory.R;
 
 public class ListensFragment extends Fragment {
 

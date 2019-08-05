@@ -11,5 +11,8 @@
     <string name="menu_top_albums">Top Albums</string>
     <string name="menu_top_songs">Top Songs</string>
     <string name="menu_listens">Listens</string>
+    <string name="artist_name">artist name</string>
+    <string name="song_title">song title</string>
+    <string name="album_cover">album cover</string>
 
 </resources>

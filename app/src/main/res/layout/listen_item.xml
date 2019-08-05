@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="6dip" >
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="6dip"
+        android:layout_marginBottom="7dp"
+        android:contentDescription="@string/album_cover" />
+
+    <TextView
+        android:id="@+id/artistName"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginEnd="100dp"
+        android:layout_toEndOf="@id/icon"
+        android:text="@string/artist_name"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/songTitle"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="10dp"
+
+        android:layout_toEndOf="@id/icon"
+        android:maxLines="1"
+        android:text="@string/song_title"
+        android:textSize="16sp" />
+
+</RelativeLayout>

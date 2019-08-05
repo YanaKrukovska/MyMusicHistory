@@ -1,4 +1,4 @@
-package com.example.mymusichistory;
+package com.ritacle.mymusichistory;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,17 +12,26 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.ritacle.mymusichistory.adapters.ListenAdapter;
+import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
+import com.ritacle.mymusichistory.testutils.ListenStubService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private ListenStubService listenService = new ListenStubService();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -42,6 +51,11 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        RecyclerView rvListens = (RecyclerView) findViewById(R.id.rvListens);
+        ListenAdapter adapter = new ListenAdapter(listenService.getListens());
+        rvListens.setAdapter(adapter);
+        rvListens.addItemDecoration(new SimpleDividerItemDecoration(this));
+        rvListens.setLayoutManager(new LinearLayoutManager(this));
 
 
 
@@ -82,7 +96,6 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         Fragment fragment = null;

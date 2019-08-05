@@ -4,7 +4,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.1"
     defaultConfig {
-        applicationId "com.example.mymusichistory"
+        applicationId "com.ritacle.mymusichistory"
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
@@ -29,6 +29,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
 }
