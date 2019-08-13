@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.model.LastListen;
+import com.ritacle.mymusichistory.utils.DataUtils;
 
 import java.util.List;
 
@@ -23,10 +24,21 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         this.lastListens = lastListens;
     }
 
+    public void clear() {
+        lastListens.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<LastListen> list) {
+        lastListens.addAll(list);
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView artistTextView;
         public TextView songTextView;
+        public TextView timeTextView;
         public final View mView;
 
         public ViewHolder(View itemView) {
@@ -35,6 +47,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
             mView = itemView;
             artistTextView = (TextView) itemView.findViewById(R.id.artistName);
             songTextView = (TextView) itemView.findViewById(R.id.songTitle);
+            timeTextView = (TextView) itemView.findViewById(R.id.listenDate);
         }
     }
 
@@ -55,6 +68,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
 
         holder.artistTextView.setText(lastListen.getArtist());
         holder.songTextView.setText(lastListen.getTitle());
+        holder.timeTextView.setText(DataUtils.convertToTimeLabel(lastListen.getDate()));
 
     }
 
