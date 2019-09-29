@@ -15,5 +15,6 @@
     <string name="song_title">song title</string>
     <string name="album_cover">album cover</string>
     <string name="listen_time">listen time</string>
+    <string name="listen_count">listen count</string>
 
 </resources>

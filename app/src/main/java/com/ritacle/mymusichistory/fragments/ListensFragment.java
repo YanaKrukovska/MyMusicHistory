@@ -1,4 +1,4 @@
-package com.ritacle.mymusichistory;
+package com.ritacle.mymusichistory.fragments;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.LastListensAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.LastListen;
@@ -75,7 +76,7 @@ public class ListensFragment extends Fragment {
                 progressDialog.dismiss();
                 adapter = new LastListensAdapter(getContext(), response.body());
                 rvListens.setAdapter(adapter);
-//                rvListens.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
+                rvListens.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
                 rvListens.setLayoutManager(new LinearLayoutManager(getActivity()));
 
             }

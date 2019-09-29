@@ -4,32 +4,36 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class LastListen {
+public class ListenAmount {
 
 
     private Long id;
 
     private String title;
-
     private String artist;
-
     private String album;
+    private int listenCount;
+
     @SerializedName("user")
     private String userMail;
-    @SerializedName("listenDate")
-    private Date listenDate;
 
 
-    public LastListen() {
+    public ListenAmount() {
     }
 
-    public LastListen(Long id, String title, String artist, String album, String userMail, Date listenDate) {
-        this.id = id;
+    public ListenAmount( String title, String artist, String album, int listenCount, String userMail) {
         this.title = title;
         this.artist = artist;
         this.album = album;
+        this.listenCount = listenCount;
         this.userMail = userMail;
-        this.listenDate = listenDate;
+    }
+
+    public ListenAmount( String title, String artist, String album, int listenCount) {
+        this.title = title;
+        this.artist = artist;
+        this.album = album;
+        this.listenCount = listenCount;
     }
 
     public String getTitle() {
@@ -72,15 +76,17 @@ public class LastListen {
         this.userMail = userMail;
     }
 
-    public Date getDate() {
-        return listenDate;
+    public int getListenCount() {
+        return listenCount;
     }
 
-    public void setDate(Date listenDate) {
-        this.listenDate = listenDate;
+    public void setListenCount(int listenCount) {
+        this.listenCount = listenCount;
     }
 
-
+    public String getUserMail() {
+        return userMail;
+    }
 }
 
 

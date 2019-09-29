@@ -16,7 +16,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.ritacle.mymusichistory.testutils.ListenStubService;
+import com.ritacle.mymusichistory.fragments.ListensFragment;
+import com.ritacle.mymusichistory.fragments.topSongs.TopSongsMainFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,8 +42,6 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.content_frame,new ListensFragment());
+        fragmentTransaction.replace(R.id.content_frame, new ListensFragment());
         fragmentTransaction.commit();
 
    /*     RecyclerView rvListens = (RecyclerView) findViewById(R.id.rvListens);
@@ -113,7 +112,8 @@ public class MainActivity extends AppCompatActivity
             fragment = new TopAlbumsFragment();
         }
         if (id == R.id.nav_top_songs) {
-            fragment = new TopSongsFragment();
+            fragment = new TopSongsMainFragment();
+
         }
 
         if (fragment != null) {

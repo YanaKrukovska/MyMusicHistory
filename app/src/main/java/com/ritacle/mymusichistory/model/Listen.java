@@ -12,9 +12,7 @@ public class Listen {
 
     private String album;
 
-
     private Date date;
-
 
     public Listen() {
     }
