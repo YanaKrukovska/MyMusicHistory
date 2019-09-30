@@ -1,13 +1,13 @@
 package com.ritacle.mymusichistory.utils;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 public class DataUtils {
 
@@ -77,4 +77,8 @@ public class DataUtils {
         return calendar.getTime();
     }
 
+    public static int daysBetween(Date date1, Date date2){
+        long diff = date2.getTime() - date1.getTime();
+        return (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+    }
 }
