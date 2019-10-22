@@ -12,7 +12,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTopSongs"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
