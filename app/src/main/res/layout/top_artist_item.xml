@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="?android:attr/listPreferredItemHeight">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="10dip"
+        android:layout_marginBottom="7dp"
+        android:contentDescription="@string/album_cover" />
+
+    <TextView
+        android:id="@+id/artistName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginBottom="10dp"
+        android:layout_toEndOf="@id/icon"
+        android:maxLines="1"
+        android:text="@string/artist_name"
+        android:textSize="18sp"
+        android:textColor="@color/textDark"/>
+
+    <TextView
+        android:id="@+id/listensCount"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="37dp"
+        android:layout_marginEnd="264dp"
+        android:layout_marginBottom="3dp"
+        android:layout_toEndOf="@id/icon"
+        android:text="@string/listen_count"
+        android:textColor="@color/textDark"
+        android:textSize="13sp" />
+
+</RelativeLayout>
