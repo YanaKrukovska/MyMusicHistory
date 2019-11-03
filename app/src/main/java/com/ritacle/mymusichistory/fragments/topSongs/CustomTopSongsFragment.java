@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,34 +16,37 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopSongsAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.ListenAmount;
 import com.ritacle.mymusichistory.network.GetDataService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
+import com.ritacle.mymusichistory.utils.EditTextDatePicker;
 
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.ritacle.mymusichistory.utils.DataUtils.addDays;
-import static com.ritacle.mymusichistory.utils.DataUtils.convertToString;
+public class CustomTopSongsFragment extends Fragment implements View.OnClickListener {
 
-public class TopSongsFragment extends Fragment {
-
-    private int timeShift;
+    private EditText startEditText;
+    private EditText endEditText;
     private String accountName;
+    private String startDate;
+    private String endDate;
     private SwipeRefreshLayout swipeToRefresh;
     private TopSongsAdapter adapter;
     private RecyclerView rvTopSongs;
+    private boolean readyToUpdate = false;
+    private View rootView;
+    private EditTextDatePicker startDatePicker;
+    private EditTextDatePicker endDatePicker;
+    private ImageButton searchButton;
 
-    public TopSongsFragment(int timeShift, String accountName) {
-        this.timeShift = timeShift;
+    public CustomTopSongsFragment(String accountName) {
         this.accountName = accountName;
     }
 
@@ -53,7 +59,15 @@ public class TopSongsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.top_songs, container, false);
+        rootView = inflater.inflate(R.layout.custom_top_songs, container, false);
+
+        // startEditText = (EditText) rootView.findViewById(R.id.startDate);
+        // endEditText = (EditText) rootView.findViewById(R.id.endDate);
+
+        startDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.startDate);
+        endDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.endDate);
+        searchButton = rootView.findViewById(R.id.button);
+        searchButton.setOnClickListener(this);
 
 
         rvTopSongs = rootView.findViewById(R.id.rvTopSongs);
@@ -70,17 +84,16 @@ public class TopSongsFragment extends Fragment {
 
         addTopSongs();
 
+
         return rootView;
     }
 
     private void addTopSongs() {
         GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
 
-        Date now = new Date();
-
         Call<List<ListenAmount>> call = service.getUserTopListens(accountName,
-                convertToString(addDays(now, timeShift)),
-                convertToString(now));
+                startDatePicker.returnDate(),
+                endDatePicker.returnDate());
         call.enqueue(new Callback<List<ListenAmount>>() {
             @Override
             public void onResponse(@NonNull Call<List<ListenAmount>> call, @NonNull Response<List<ListenAmount>> response) {
@@ -96,5 +109,40 @@ public class TopSongsFragment extends Fragment {
                 Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+ /*   @Override
+    public void onResume() {
+        super.onResume();
+
+        startDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.startDate);
+        endDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.endDate);
+        if (startDatePicker.isDateChosen() && endDatePicker.isDateChosen()) {
+            rvTopSongsCustom = rootView.findViewById(R.id.rvTopSongsCustom);
+            swipeToRefresh = rootView.findViewById(R.id.swipeToRefresh);
+            swipeToRefresh.setColorSchemeResources(R.color.colorAccent);
+
+            swipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    addTopSongs();
+                    swipeToRefresh.setRefreshing(false);
+                }
+            });
+
+            addTopSongs();
+
+        }
+    }*/
+
+
+    public void updateCustomFragment() {
+        // do something to update the fragment
+    }
+
+    @Override
+    public void onClick(View view) {
+        addTopSongs();
     }
 }
