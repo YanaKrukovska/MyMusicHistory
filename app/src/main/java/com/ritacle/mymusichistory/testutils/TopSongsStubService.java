@@ -1,7 +1,5 @@
 package com.ritacle.mymusichistory.testutils;
 
-import com.ritacle.mymusichistory.model.LastListen;
-import com.ritacle.mymusichistory.model.Listen;
 import com.ritacle.mymusichistory.model.ListenAmount;
 
 import java.util.LinkedList;

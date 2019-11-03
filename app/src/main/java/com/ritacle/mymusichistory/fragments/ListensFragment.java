@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +26,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.internal.EverythingIsNonNull;
 
 public class ListensFragment extends Fragment {
 
@@ -35,20 +37,20 @@ public class ListensFragment extends Fragment {
 
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.listens_main, container, false);
-        rvListens = (RecyclerView) rootView.findViewById(R.id.rvListens);
+        rvListens = rootView.findViewById(R.id.rvListens);
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Wait luv....");
         progressDialog.show();
 
-        swipeToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeToRefresh);
+        swipeToRefresh = rootView.findViewById(R.id.swipeToRefresh);
         swipeToRefresh.setColorSchemeResources(R.color.colorAccent);
 
 
@@ -72,6 +74,7 @@ public class ListensFragment extends Fragment {
         Call<List<LastListen>> call = service.getSongReport("jana.krua@gmail.com");
         call.enqueue(new Callback<List<LastListen>>() {
             @Override
+            @EverythingIsNonNull
             public void onResponse(Call<List<LastListen>> call, Response<List<LastListen>> response) {
                 progressDialog.dismiss();
                 adapter = new LastListensAdapter(getContext(), response.body());
@@ -82,6 +85,7 @@ public class ListensFragment extends Fragment {
             }
 
             @Override
+            @EverythingIsNonNull
             public void onFailure(Call<List<LastListen>> call, Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();

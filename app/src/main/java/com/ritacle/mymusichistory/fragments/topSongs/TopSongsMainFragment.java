@@ -5,58 +5,53 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopSongsPagerAdapter;
-import com.ritacle.mymusichistory.testutils.TopSongsStubService;
-import com.ritacle.mymusichistory.utils.DataUtils;
 
 import java.util.Date;
 
-import static com.ritacle.mymusichistory.utils.DataUtils.*;
+import static com.ritacle.mymusichistory.utils.DataUtils.addMonth;
+import static com.ritacle.mymusichistory.utils.DataUtils.daysBetween;
 
 
-public class TopSongsMainFragment extends Fragment {
-
-
-    private TopSongsStubService service = new TopSongsStubService();
-
-
-    private TopSongsPagerAdapter pagerAdapter;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private String MAIL = "jana.krua@gmail.com";
+public class TopSongsMainFragment extends FragmentStatePagerAdapter {
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.top_songs_main, container, false);
 
-        //((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        // Toolbar toolbar = rootView.findViewById(R.id.toolbar_tabs);
-        //  ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
+        ViewPager viewPager = rootView.findViewById(R.id.view_pager);
+        TabLayout tabLayout = rootView.findViewById(R.id.tab_layout);
 
-        viewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
-        pagerAdapter = new TopSongsPagerAdapter(getChildFragmentManager());
-        pagerAdapter.addFragment(new TopSongsFragment(-7, MAIL), "7 days");
+        TopSongsPagerAdapter pagerAdapter = new TopSongsPagerAdapter(getChildFragmentManager());
+        if (getArguments() == null || getArguments().getString("accountName") == null) {
+            throw new IllegalStateException("User name not provided");
+        }
+        String accountName = getArguments().getString("accountName");
+
+        pagerAdapter.addFragment(new TopSongsFragment(-7, accountName), "7 days");
         Date now = new Date();
-        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -1)), MAIL), "one month");
-        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -3)), MAIL), "3 months");
-        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -6)), MAIL), "6 months");
-        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -12)), MAIL), "12 months");
-        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -120)), MAIL), "overall");
+
+        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -1)), accountName), "one month");
+        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -3)), accountName), "3 months");
+        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -6)), accountName), "6 months");
+        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -12)), accountName), "12 months");
+        pagerAdapter.addFragment(new TopSongsFragment(daysBetween(now, addMonth(now, -120)), accountName), "overall");
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
         viewPager.setAdapter(pagerAdapter);
@@ -67,4 +62,13 @@ public class TopSongsMainFragment extends Fragment {
     }
 
 
+    @Override
+    public Fragment getItem(int position) {
+        return null;
+    }
+
+    @Override
+    public int getCount() {
+        return 0;
+    }
 }

@@ -45,6 +45,12 @@ public class TopSongsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int i =1;
+            }
+        });
         super.onViewCreated(view, savedInstanceState);
     }
 

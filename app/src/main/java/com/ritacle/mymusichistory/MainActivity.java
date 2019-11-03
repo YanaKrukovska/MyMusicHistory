@@ -1,5 +1,10 @@
 package com.ritacle.mymusichistory;
 
+import android.accounts.AccountManager;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,21 +18,39 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.ritacle.mymusichistory.fragments.ListensFragment;
 import com.ritacle.mymusichistory.fragments.topSongs.TopSongsMainFragment;
+import com.ritacle.mymusichistory.scanner.service.ScannerService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int REQUEST_CODE_EMAIL = 1;
+    private String accountName;
+
+
     private FragmentTransaction fragmentTransaction;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Context context = getApplicationContext();
+        sharedPref = context.getSharedPreferences("com.ritacle.mymusichistory", Context.MODE_PRIVATE);
+        accountName = sharedPref.getString("accountName", null);
+
+
+        if (accountName == null) {
+            getUser();
+        } else {
+            startScannerService();
+        }
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -102,6 +125,7 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = null;
 
+
         if (id == R.id.list_of_listens) {
             fragment = new ListensFragment();
         }
@@ -112,12 +136,16 @@ public class MainActivity extends AppCompatActivity
             fragment = new TopAlbumsFragment();
         }
         if (id == R.id.nav_top_songs) {
+            Bundle bundle = new Bundle();
+            bundle.putString("accountName", accountName);
             fragment = new TopSongsMainFragment();
+            fragment.setArguments(bundle);
 
         }
 
         if (fragment != null) {
-             fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+            fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
         }
@@ -128,5 +156,41 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void getUser() {
 
+        Intent intent = AccountPicker.newChooseAccountIntent(null, null,
+                new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
+                false, null, null, null, null);
+
+        try {
+            startActivityForResult(intent, REQUEST_CODE_EMAIL);
+        } catch (ActivityNotFoundException e) {
+            // This device may not have Google Play Services installed.
+            // TODO: do something else
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_EMAIL && resultCode == RESULT_OK) {
+            accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("accountName", accountName).apply();
+            startScannerService();
+        }
+    }
+
+    private void startScannerService() {
+        Intent serviceIntent = new Intent(this, ScannerService.class);
+        serviceIntent.putExtra("accountName", accountName);
+        startService(serviceIntent);
+
+
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
 }
