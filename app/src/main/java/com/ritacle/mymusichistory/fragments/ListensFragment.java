@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.ritacle.mymusichistory.MainActivity;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.LastListensAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
@@ -69,7 +70,7 @@ public class ListensFragment extends Fragment {
     private void addListens() {
         GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
         //TODO: add getting user
-        Call<List<LastListen>> call = service.getSongReport("jana.krua@gmail.com");
+        Call<List<LastListen>> call = service.getSongReport(((MainActivity) getActivity()).getAccountName());
         call.enqueue(new Callback<List<LastListen>>() {
             @Override
             public void onResponse(Call<List<LastListen>> call, Response<List<LastListen>> response) {
