@@ -18,5 +18,6 @@
     <string name="listen_count">listen count</string>
     <string name="start_date_message">Start date:</string>
     <string name="end_date_message">End date:</string>
+    <string name="account_key">MMH-account-name</string>
 
 </resources>

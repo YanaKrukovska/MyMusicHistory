@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.ritacle.mymusichistory.MainActivity;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopSongsPagerAdapter;
 
@@ -25,7 +26,7 @@ public class TopSongsMainFragment extends Fragment {
     private TopSongsPagerAdapter pagerAdapter;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private String MAIL = "jana.krua@gmail.com";
+    private String MAIL;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -36,7 +37,7 @@ public class TopSongsMainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-
+        MAIL = ((MainActivity) getActivity()).getAccountName();
 
         View rootView = inflater.inflate(R.layout.top_songs_main, container, false);
 
