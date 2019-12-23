@@ -1,10 +1,15 @@
 package com.ritacle.mymusichistory;
 
 import android.accounts.AccountManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +18,7 @@ import android.view.View;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -60,7 +66,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -80,6 +85,26 @@ public class MainActivity extends AppCompatActivity
         rvListens.setLayoutManager(new LinearLayoutManager(this));
 */
 
+        //showNotification();
+
+
+    }
+
+    private void showNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("0",
+                    "APP_RUNNING", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "0")
+                .setSmallIcon(R.drawable.ic_logo_notif)
+                .setAutoCancel(true)
+                .setContentText("Hello there");
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pi);
+        notificationManager.notify(0, builder.build());
     }
 
     @Override
@@ -171,4 +196,5 @@ public class MainActivity extends AppCompatActivity
     public String getAccountName() {
         return accountName;
     }
+
 }
