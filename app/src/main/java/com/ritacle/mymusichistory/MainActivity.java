@@ -9,7 +9,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,6 +77,12 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.replace(R.id.content_frame, new ListensFragment());
         fragmentTransaction.commit();
 
+
+      /*  Intent serviceIntent = new Intent(getApplicationContext(), ForegroundService.class);
+        //serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+        ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
+*/
+
    /*     RecyclerView rvListens = (RecyclerView) findViewById(R.id.rvListens);
         ListenAdapter adapter = new ListenAdapter(listenService.getListens());
         rvListens.setAdapter(adapter);
@@ -85,7 +90,7 @@ public class MainActivity extends AppCompatActivity
         rvListens.setLayoutManager(new LinearLayoutManager(this));
 */
 
-        //showNotification();
+        // showNotification();
 
 
     }
@@ -187,6 +192,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_EMAIL && resultCode == RESULT_OK) {
             accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             getPreferences(Context.MODE_PRIVATE).edit().putString(getResources().getString(R.string.account_key), accountName).apply();
