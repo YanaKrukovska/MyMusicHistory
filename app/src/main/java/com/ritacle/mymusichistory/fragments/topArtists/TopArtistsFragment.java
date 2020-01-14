@@ -40,7 +40,7 @@ public class TopArtistsFragment extends Fragment {
     private SwipeRefreshLayout swipeToRefresh;
     private TopArtistsAdapter adapter;
     private RecyclerView rvTopArtists;
-    private TopArtistsStubService service = new TopArtistsStubService();
+    private TopArtistsStubService stubService = new TopArtistsStubService();
 
 
     public TopArtistsFragment(int timeShift, String accountName) {
@@ -81,7 +81,7 @@ public class TopArtistsFragment extends Fragment {
 
 
 
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        final GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
       Date now = new Date();
 
         Call<List<TopArtist>> call = service.getUserTopArtists(accountName,
@@ -90,7 +90,8 @@ public class TopArtistsFragment extends Fragment {
         call.enqueue(new Callback<List<TopArtist>>() {
             @Override
             public void onResponse(@NonNull Call<List<TopArtist>> call, @NonNull Response<List<TopArtist>> response) {
-                adapter = new TopArtistsAdapter(getContext(), response.body());
+               // adapter = new TopArtistsAdapter(getContext(), response.body());
+                adapter = new TopArtistsAdapter(getContext(), stubService.getArtists());
                 rvTopArtists.setAdapter(adapter);
                 rvTopArtists.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
                 rvTopArtists.setLayoutManager(new LinearLayoutManager(getActivity()));

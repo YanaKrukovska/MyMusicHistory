@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -101,7 +102,6 @@ public class CustomTopSongsFragment extends Fragment implements View.OnClickList
                 rvTopSongs.setAdapter(adapter);
                 rvTopSongs.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
                 rvTopSongs.setLayoutManager(new LinearLayoutManager(getActivity()));
-
             }
 
             @Override
@@ -109,6 +109,8 @@ public class CustomTopSongsFragment extends Fragment implements View.OnClickList
                 Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
+
+
     }
 
 
