@@ -71,6 +71,7 @@ public class ListeningBroadcastReceiver extends BroadcastReceiver {
         }
 
         showNotification(context, receivedSong);
+        Log.d("POSITION = ", "" + intent.getLongExtra("position", 1));
 
 
         if (START_PLAY_STATE == 3 && isSongChange) {
@@ -110,6 +111,7 @@ public class ListeningBroadcastReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.ic_logo_notif)
                 .setAutoCancel(true)
                 .setTicker("cat")
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setContentTitle(recievedSong.getAlbum().getArtist().getName() + " — " + recievedSong.getTitle())
                 .setContentText("listening");
         Intent intent = new Intent(context.getApplicationContext(), MainActivity.class);
