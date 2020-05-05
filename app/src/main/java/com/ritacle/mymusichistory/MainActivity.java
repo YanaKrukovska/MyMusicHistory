@@ -1,13 +1,10 @@
 package com.ritacle.mymusichistory;
 
 import android.accounts.AccountManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,7 +14,6 @@ import android.view.View;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -31,14 +27,27 @@ import com.google.android.material.snackbar.Snackbar;
 import com.ritacle.mymusichistory.fragments.ListensFragment;
 import com.ritacle.mymusichistory.fragments.topArtists.TopArtistsMainFragment;
 import com.ritacle.mymusichistory.fragments.topSongs.TopSongsMainFragment;
+import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
+import com.ritacle.mymusichistory.service.ListenerService;
+import com.ritacle.mymusichistory.service.ListeningBroadcastReceiver;
+import com.ritacle.mymusichistory.service.SendService;
+
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CODE_EMAIL = 1;
 
-    private FragmentTransaction fragmentTransaction;
+    private BlockingDeque<Scrobble> listens;
+    private SendService sendService;
+
     private String accountName;
+    private FragmentTransaction fragmentTransaction;
+
+    public MainActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +62,7 @@ public class MainActivity extends AppCompatActivity
 
 //TODO: prevent exception when account name has not been defined yet during the first run
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar1);
 
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -90,26 +99,18 @@ public class MainActivity extends AppCompatActivity
         rvListens.setLayoutManager(new LinearLayoutManager(this));
 */
 
-        // showNotification();
 
 
-    }
+        listens = new LinkedBlockingDeque<>();
+        sendService = new SendService(getApplicationContext(), listens);
 
-    private void showNotification() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("0",
-                    "APP_RUNNING", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "0")
-                .setSmallIcon(R.drawable.ic_logo_notif)
-                .setAutoCancel(true)
-                .setContentText("Hello there");
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pi);
-        notificationManager.notify(0, builder.build());
+        // ArrayAdapter<Listen> listAdapter = new ArrayAdapter<Listen>.createFromResource(getApplicationContext(),)
+        // listenHistoryView.setAdapter(listAdapter);
+
+        registerReceiver(new ListeningBroadcastReceiver(listens, this), createFilter());
+        performOnBackgroundThread(sendService);
+       //startService(new Intent(getApplicationContext(), ListenerService.class));
+
     }
 
     @Override
@@ -202,5 +203,48 @@ public class MainActivity extends AppCompatActivity
     public String getAccountName() {
         return accountName;
     }
+
+
+    /////
+
+
+    private void performOnBackgroundThread(final Runnable runnable) {
+        final Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    runnable.run();
+                } finally {
+
+                }
+            }
+        };
+        t.start();
+
+    }
+
+    private IntentFilter createFilter() {
+        IntentFilter intentFilter = new IntentFilter();
+
+        //  intentFilter.addAction("com.android.music.musicservicecommand");
+        intentFilter.addAction("com.android.music.metachanged");
+        intentFilter.addAction("com.android.music.playstatechanged");
+        intentFilter.addAction("com.android.music.updateprogress");
+       /*
+        intentFilter.addAction("com.htc.music.metachanged");
+        intentFilter.addAction("fm.last.android.metachanged");
+        intentFilter.addAction("com.sec.android.app.music.metachanged");
+        intentFilter.addAction("com.nullsoft.winamp.metachanged");
+        intentFilter.addAction("com.amazon.mp3.metachanged");
+        intentFilter.addAction("com.miui.player.metachanged");
+        intentFilter.addAction("com.real.IMP.metachanged");
+        intentFilter.addAction("com.sonyericsson.music.metachanged");
+        intentFilter.addAction("com.rdio.android.metachanged");
+        intentFilter.addAction("com.samsung.sec.android.MusicPlayer.metachanged");
+        intentFilter.addAction("com.andrew.apollo.metachanged");*/
+
+        return intentFilter;
+    }
+
 
 }
