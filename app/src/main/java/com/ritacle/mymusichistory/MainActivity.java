@@ -39,12 +39,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-
     private static final int REQUEST_CODE_EMAIL = 1;
-
     private BlockingDeque<Scrobble> listens;
     private SendService sendService;
-
     private String accountName;
     private FragmentTransaction fragmentTransaction;
     private NavigationView navigationView;
@@ -56,10 +53,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         settings.registerOnSharedPreferenceChangeListener(this);
-
 
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         accountName = sharedPref.getString(getResources().getString(R.string.account_key), null);
@@ -72,10 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
-
-
         Toolbar toolbar = findViewById(R.id.toolbar1);
-
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -87,8 +79,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-         navigationView = findViewById(R.id.nav_view);
-
+        navigationView = findViewById(R.id.nav_view);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -96,22 +87,15 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-
-       // TextView userName = (TextView)navigationView.findViewById(R.id.usernameView);
-
-
-
-        String savedUsername = settings.getString("user_name", "User");
+        String username = settings.getString("user_name", "User");
         View headerView = navigationView.getHeaderView(0);
         TextView title = headerView.findViewById(R.id.usernameView);
-        title.setText(savedUsername);
+        title.setText(username);
 
 
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, new ListensFragment());
         fragmentTransaction.commit();
-
-
 
 
       /*  Intent serviceIntent = new Intent(getApplicationContext(), ForegroundService.class);
@@ -236,7 +220,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     private void performOnBackgroundThread(final Runnable runnable) {
         final Thread t = new Thread() {
             @Override
@@ -275,25 +258,15 @@ public class MainActivity extends AppCompatActivity
         return intentFilter;
     }
 
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        if (key.equals("user_name")){
+        if (key.equals("user_name")) {
             String savedUsername = sharedPreferences.getString("user_name", "User");
             View headerView = navigationView.getHeaderView(0);
             TextView title = headerView.findViewById(R.id.usernameView);
             title.setText(savedUsername);
-
         }
-
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//
-//        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-//        settings.unregisterOnSharedPreferenceChangeListener(this);
-//    }
 }
