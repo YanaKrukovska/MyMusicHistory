@@ -1,7 +1,10 @@
 package com.ritacle.mymusichistory;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.res.Configuration;
+
+import com.ritacle.mymusichistory.service.ListenerService;
 
 public class MMHApplication extends Application {
     // Called when the application is starting, before any other application objects have been created.
@@ -26,5 +29,9 @@ public class MMHApplication extends Application {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
+    }
+
+    public void startListenerService() {
+        startService(new Intent(this, ListenerService.class));
     }
 }

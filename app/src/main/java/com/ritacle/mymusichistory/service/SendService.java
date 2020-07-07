@@ -35,7 +35,7 @@ public class  SendService  implements Runnable, Callback<Scrobble> {
 
     private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
     public static final int WAIT_FOR_CONNECTION = 120000;//600000;
-    public static final int WAIT_FOR_NEXT_LISTEN_SENDING = 10000;
+    public static final int WAIT_FOR_NEXT_LISTEN_SENDING = 5000;
     private final StatisticRestService mmhRestAPI;
     private BlockingDeque<Scrobble> listens;
     private Context context;

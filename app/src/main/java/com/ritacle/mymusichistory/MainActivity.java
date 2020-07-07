@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +31,6 @@ import com.ritacle.mymusichistory.fragments.ListensFragment;
 import com.ritacle.mymusichistory.fragments.topArtists.TopArtistsMainFragment;
 import com.ritacle.mymusichistory.fragments.topSongs.TopSongsMainFragment;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
-import com.ritacle.mymusichistory.service.ListeningBroadcastReceiver;
 import com.ritacle.mymusichistory.service.SendService;
 
 import java.util.concurrent.BlockingDeque;
@@ -39,19 +39,26 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private MediaSessionManager.OnActiveSessionsChangedListener mListener;
+
     private static final int REQUEST_CODE_EMAIL = 1;
     private BlockingDeque<Scrobble> listens;
     private SendService sendService;
     private String accountName;
     private FragmentTransaction fragmentTransaction;
     private NavigationView navigationView;
+    private MMHApplication application;
 
     public MainActivity() {
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        application = (MMHApplication) getApplication();
+        application.startListenerService();
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         settings.registerOnSharedPreferenceChangeListener(this);
@@ -112,16 +119,17 @@ public class MainActivity extends AppCompatActivity
 
 
         listens = new LinkedBlockingDeque<>();
-        sendService = new SendService(getApplicationContext(), listens);
+        // sendService = new SendService(getApplicationContext(), listens);
 
         // ArrayAdapter<Listen> listAdapter = new ArrayAdapter<Listen>.createFromResource(getApplicationContext(),)
         // listenHistoryView.setAdapter(listAdapter);
 
-        registerReceiver(new ListeningBroadcastReceiver(listens, this), createFilter());
-        performOnBackgroundThread(sendService);
-        //startService(new Intent(getApplicationContext(), ListenerService.class));
+        //  registerReceiver(new ListeningBroadcastReceiver(listens, this), createFilter());
+        //  performOnBackgroundThread(sendService);
+
 
     }
+
 
     @Override
     public void onBackPressed() {
