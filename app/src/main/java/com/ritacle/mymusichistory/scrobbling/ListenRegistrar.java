@@ -58,13 +58,13 @@ public class ListenRegistrar {
         for (int i = playbackItem.getPlaysScrobbled(); i < playCount; i++) {
             registerSong(song);
             playbackItem.addScrobble();
+            NotificationUtil.showNotification(context, song, "saved");
         }
 
         if (newListens > 0) {
             Log.d(TAG, String.format("Queued %d listens", playCount));
         }
 
-        NotificationUtil.showNotification(context, song, "saved");
     }
 
     private void registerSong(Song song) {

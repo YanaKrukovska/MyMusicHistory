@@ -35,4 +35,9 @@ public class NotificationUtil {
 
     }
 
+    public static void hideListeningNowNotification(Context context){
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
+    }
+
 }

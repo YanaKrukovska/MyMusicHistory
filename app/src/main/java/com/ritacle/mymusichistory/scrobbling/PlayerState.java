@@ -39,6 +39,8 @@ public class PlayerState {
             scheduleSubmission();
         } else {
             Log.d(TAG, String.format("Track paused (state %d)", state));
+            playbackItem.stopPlaying();
+            NotificationUtil.hideListeningNowNotification(context.getApplicationContext());
             listenRegistrar.submit(playbackItem);
         }
     }
