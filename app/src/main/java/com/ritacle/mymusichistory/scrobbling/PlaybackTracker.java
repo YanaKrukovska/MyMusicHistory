@@ -4,12 +4,13 @@ import android.content.Context;
 import android.media.MediaMetadata;
 import android.media.session.PlaybackState;
 
+import com.ritacle.mymusichistory.model.scrobbler_model.Song;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class PlaybackTracker {
 
-    private final MetadataTransformers metadataTransformers = new MetadataTransformers();
     private Map<String, PlayerState> playerStates = new HashMap<>();
     private Context context;
 
@@ -31,15 +32,12 @@ public class PlaybackTracker {
             return;
         }
 
-        Track track =
-                metadataTransformers.transformForPackageName(player, Track.fromMediaMetadata(metadata));
-
-        if (!track.isValid()) {
+        Song song = Song.fromMediaMetadata(metadata);
+        if (!song.isValid()) {
             return;
         }
-
         PlayerState playerState = getOrCreatePlayerState(player);
-        playerState.setTrack(track);
+        playerState.setSong(song);
     }
 
     public void handleSessionTermination(String player) {

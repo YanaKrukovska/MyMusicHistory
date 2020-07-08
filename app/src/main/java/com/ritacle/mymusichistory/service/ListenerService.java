@@ -28,7 +28,6 @@ public class ListenerService extends NotificationListenerService
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "Listener Service";
-
     private List<MediaController> mediaControllers = new ArrayList<>();
     private Map<MediaController, MediaController.Callback> controllerCallbacks = new WeakHashMap<>();
     private PlaybackTracker playbackTracker;
@@ -36,6 +35,7 @@ public class ListenerService extends NotificationListenerService
     @Override
     public void onCreate() {
         Log.d(TAG, "NotificationListenerService started");
+
         playbackTracker = new PlaybackTracker(getApplicationContext());
 
         MediaSessionManager mediaSessionManager =
@@ -59,8 +59,6 @@ public class ListenerService extends NotificationListenerService
 
         for (final MediaController controller : activeMediaControllers) {
             String packageName = controller.getPackageName();
-            String prefKey = "player." + packageName;
-
             Log.d(TAG, String.format("Listening for events from %s", packageName));
 
             MediaController.Callback callback =
@@ -78,12 +76,9 @@ public class ListenerService extends NotificationListenerService
 
             controllerCallbacks.put(controller, callback);
             controller.registerCallback(callback);
-
-            // Media may already be playing - update with current state.
             controllerPlaybackStateChanged(controller, controller.getPlaybackState());
             controllerMetadataChanged(controller, controller.getMetadata());
         }
-
         mediaControllers = activeMediaControllers;
     }
 
@@ -106,7 +101,7 @@ public class ListenerService extends NotificationListenerService
                             && controllerCallbacks.containsKey(optionalController.get())) {
                         MediaController controller = optionalController.get();
                         controller.unregisterCallback(controllerCallbacks.get(controller));
-                        //   playbackTracker.handleSessionTermination(controller.getPackageName());
+                        playbackTracker.handleSessionTermination(controller.getPackageName());
                         controllerCallbacks.remove(controller);
                     }
                 }
@@ -115,12 +110,12 @@ public class ListenerService extends NotificationListenerService
     }
 
     private void controllerPlaybackStateChanged(MediaController controller, PlaybackState state) {
-        Log.d(TAG, "controllerPlaybackStateChanged");
+        Log.d(TAG, "controller playback state changed");
         playbackTracker.handlePlaybackStateChange(controller.getPackageName(), state);
     }
 
     private void controllerMetadataChanged(MediaController controller, MediaMetadata metadata) {
-        Log.d(TAG, "controllerMetadataChanged");
+        Log.d(TAG, "controller metadata changed");
         playbackTracker.handleMetadataChange(controller.getPackageName(), metadata);
     }
 }

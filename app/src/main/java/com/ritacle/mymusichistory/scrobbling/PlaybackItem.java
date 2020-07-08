@@ -1,42 +1,27 @@
 package com.ritacle.mymusichistory.scrobbling;
+
+import androidx.annotation.NonNull;
+
+import com.ritacle.mymusichistory.model.scrobbler_model.Song;
+
 import java.util.Locale;
 
 public class PlaybackItem {
 
     private final long timestamp;
-
-    private Track track;
+    private Song song;
     private long amountPlayed;
     private long playbackStartTime;
     private boolean isPlaying;
     private int playsScrobbled;
-    private long dbId;
 
-    public PlaybackItem(Track track, long timestamp) {
-        this.track = track;
+    public PlaybackItem(Song song, long timestamp) {
+        this.song = song;
         this.timestamp = timestamp;
     }
 
-    public PlaybackItem(Track track, long timestamp, long amountPlayed) {
-        this(track, timestamp);
-        this.amountPlayed = amountPlayed;
-    }
-
-    public PlaybackItem(Track track, long timestamp, long amountPlayed, long dbId) {
-        this(track, timestamp, amountPlayed);
-        this.dbId = dbId;
-    }
-
-    public void setTrack(Track track) {
-        this.track = track;
-    }
-
-    public Track getTrack() {
-        return track;
-    }
-
-    public void updateTrack(Track track) {
-        this.track = track;
+    public void updateSong(Song song) {
+        this.song = song;
     }
 
     public long getTimestamp() {
@@ -59,19 +44,18 @@ public class PlaybackItem {
         playsScrobbled++;
     }
 
-    public long getDbId() {
-        return dbId;
+    public Song getSong() {
+        return song;
     }
 
-    public void setDbId(long dbId) {
-        this.dbId = dbId;
+    public void setSong(Song song) {
+        this.song = song;
     }
 
     public void startPlaying() {
         if (!isPlaying) {
             playbackStartTime = System.currentTimeMillis();
         }
-
         isPlaying = true;
     }
 
@@ -84,20 +68,21 @@ public class PlaybackItem {
         if (!isPlaying()) {
             return;
         }
-
         long now = System.currentTimeMillis();
         long start = playbackStartTime;
         amountPlayed += now - start;
         playbackStartTime = now;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return String.format(
                 Locale.getDefault(),
-                "PlaybackItem{Track=%s, timestamp=%d, isPlaying=%s, amountPlayed=%d, playbackStartTime=%d, "
+                "PlaybackItem{Track=%s, artist=%s, timestamp=%d, isPlaying=%s, amountPlayed=%d, playbackStartTime=%d, "
                         + "playsScrobbled=%d}",
-                track.toString(),
+                song.getTitle(),
+                song.getAlbum().getArtist().getName(),
                 timestamp,
                 Boolean.toString(isPlaying),
                 amountPlayed,
