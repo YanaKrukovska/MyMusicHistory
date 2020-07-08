@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.media.MediaMetadata;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class Song {
         this.duration = duration;
     }
 
-    public Song(Song.SongBuilder songBuilder) {
+    public Song(SongBuilder songBuilder) {
         this.title = songBuilder.title;
         this.album = songBuilder.album;
         this.duration = songBuilder.duration;
@@ -71,7 +72,7 @@ public class Song {
             }
         }
 
-        Song.SongBuilder songBuilder = Song.builder();
+       SongBuilder songBuilder = Song.builder();
         songBuilder.title(title);
 
         if (duration < 1000) {
@@ -103,6 +104,7 @@ public class Song {
         return Objects.hash(title, album);
     }
 
+    @NonNull
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -113,8 +115,8 @@ public class Song {
                 .toString();
     }
 
-    public static Song.SongBuilder builder() {
-        return new Song.SongBuilder();
+    public static SongBuilder builder() {
+        return new SongBuilder();
     }
 
     public static final class SongBuilder {
@@ -122,17 +124,17 @@ public class Song {
         private Album album;
         private long duration;
 
-        public Song.SongBuilder title(String songTitle) {
+        public SongBuilder title(String songTitle) {
             this.title = songTitle;
             return this;
         }
 
-        public Song.SongBuilder album(Album album) {
+        public SongBuilder album(Album album) {
             this.album = album;
             return this;
         }
 
-        public Song.SongBuilder duration(long duration) {
+        public SongBuilder duration(long duration) {
             this.duration = duration;
             return this;
         }
