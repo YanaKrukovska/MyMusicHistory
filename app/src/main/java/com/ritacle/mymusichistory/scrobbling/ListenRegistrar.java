@@ -19,9 +19,11 @@ public class ListenRegistrar {
 
     private static final String TAG = "Listen registrar";
     private Context context;
+    private NotificationUtil notificationUtil;
 
-    public ListenRegistrar(Context context) {
+    public ListenRegistrar(Context context, NotificationUtil notificationUtil) {
         this.context = context;
+        this.notificationUtil = notificationUtil;
     }
 
     public Context getContext() {
@@ -58,7 +60,7 @@ public class ListenRegistrar {
         for (int i = playbackItem.getPlaysScrobbled(); i < playCount; i++) {
             registerSong(song);
             playbackItem.addScrobble();
-            NotificationUtil.showNotification(context, song, "saved");
+           notificationUtil.showListeningNowNotification(song, "saved");
         }
 
         if (newListens > 0) {

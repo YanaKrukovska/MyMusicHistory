@@ -49,7 +49,9 @@ public class MMHApplication extends Application {
     }
 
     public void startListenerService() {
-        startService(new Intent(this, ListenerService.class));
+        if (ListenerService.isNotificationAccessEnabled(this)) {
+            startService(new Intent(this, ListenerService.class));
+        }
     }
 
     public static void submit(Scrobble message) throws InterruptedException {

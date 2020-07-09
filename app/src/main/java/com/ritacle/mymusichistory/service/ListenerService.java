@@ -2,6 +2,7 @@ package com.ritacle.mymusichistory.service;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
@@ -17,6 +18,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.ritacle.mymusichistory.scrobbling.PlaybackTracker;
+import com.ritacle.mymusichistory.utils.NotificationUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +38,14 @@ public class ListenerService extends NotificationListenerService
     public void onCreate() {
         Log.d(TAG, "NotificationListenerService started");
 
-        playbackTracker = new PlaybackTracker(getApplicationContext());
+        if (!NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName())) {
+            Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+            startActivity(intent);
+        }
+        NotificationUtil notificationUtil =
+                new NotificationUtil(this);
 
+        playbackTracker = new PlaybackTracker(getApplicationContext(), notificationUtil);
         MediaSessionManager mediaSessionManager =
                 (MediaSessionManager)
                         getApplicationContext().getSystemService(Context.MEDIA_SESSION_SERVICE);

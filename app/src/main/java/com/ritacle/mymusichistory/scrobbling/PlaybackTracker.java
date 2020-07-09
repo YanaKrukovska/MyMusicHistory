@@ -5,6 +5,7 @@ import android.media.MediaMetadata;
 import android.media.session.PlaybackState;
 
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
+import com.ritacle.mymusichistory.utils.NotificationUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +14,11 @@ public class PlaybackTracker {
 
     private Map<String, PlayerState> playerStates = new HashMap<>();
     private Context context;
+    private NotificationUtil notificationUtil;
 
-    public PlaybackTracker(Context context) {
+    public PlaybackTracker(Context context, NotificationUtil notificationUtil) {
         this.context = context;
+        this.notificationUtil = notificationUtil;
     }
 
     public void handlePlaybackStateChange(String player, PlaybackState playbackState) {
@@ -53,7 +56,7 @@ public class PlaybackTracker {
         PlayerState playerState = playerStates.get(player);
 
         if (!playerStates.containsKey(player)) {
-            playerState = new PlayerState(context);
+            playerState = new PlayerState(context, notificationUtil);
             playerStates.put(player, playerState);
         }
 

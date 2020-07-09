@@ -17,11 +17,11 @@ public class PlayerState {
     private ListenRegistrar listenRegistrar;
     private PlaybackItem playbackItem;
     private Timer submissionTimer;
-    private Context context;
+    private NotificationUtil notificationUtil;
 
-    public PlayerState(Context context) {
-        this.context = context;
-        this.listenRegistrar = new ListenRegistrar(context);
+    public PlayerState(Context context, NotificationUtil notificationUtil) {
+        this.notificationUtil = notificationUtil;
+        this.listenRegistrar = new ListenRegistrar(context, notificationUtil);
     }
 
     public void setPlaybackState(PlaybackState playbackState) {
@@ -35,12 +35,12 @@ public class PlayerState {
         if (isPlaying) {
             Log.d(TAG, "Song playing");
             playbackItem.startPlaying();
-            NotificationUtil.showNotification(context.getApplicationContext(), playbackItem.getSong(), "listening");
+            notificationUtil.showListeningNowNotification(playbackItem.getSong(), "listening");
             scheduleSubmission();
         } else {
             Log.d(TAG, String.format("Track paused (state %d)", state));
             playbackItem.stopPlaying();
-            NotificationUtil.hideListeningNowNotification(context.getApplicationContext());
+            notificationUtil.hideListeningNowNotification();
             listenRegistrar.submit(playbackItem);
         }
     }
@@ -68,7 +68,7 @@ public class PlayerState {
         }
 
         if (isPlaying) {
-            NotificationUtil.showNotification(context, song, "listening");
+            notificationUtil.showListeningNowNotification(song, "listening");
             playbackItem.startPlaying();
             scheduleSubmission();
         }
