@@ -14,8 +14,8 @@ import java.util.Random;
 
 public class ListenRegistrar {
 
-    private long MINIMUM_LISTENING_TIME = 10 * 1000;
-    private static final int LISTEN_THRESHOLD = 15 * 1000;
+    private long MINIMUM_LISTENING_TIME = 15 * 1000;
+    private static int LISTEN_THRESHOLD = 50 * 1000;
 
     private static final String TAG = "Listen registrar";
     private Context context;
@@ -33,7 +33,6 @@ public class ListenRegistrar {
     public void submit(PlaybackItem playbackItem) {
         playbackItem.updateAmountPlayed();
         Song song = playbackItem.getSong();
-        long timestamp = playbackItem.getTimestamp();
         long duration = song.getDuration();
         long playTime = playbackItem.getAmountPlayed();
 
@@ -60,7 +59,7 @@ public class ListenRegistrar {
         for (int i = playbackItem.getPlaysScrobbled(); i < playCount; i++) {
             registerSong(song);
             playbackItem.addScrobble();
-           notificationUtil.showListeningNowNotification(song, "saved");
+            notificationUtil.showListeningNowNotification(song, "saved");
         }
 
         if (newListens > 0) {

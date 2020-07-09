@@ -55,7 +55,7 @@ public class Song {
     }
 
     public boolean isValid() {
-        return !title.equals("") && !album.getTitle().equals("");
+        return title!= null && album != null && !title.equals("") && !album.getTitle().equals("");
     }
 
     public static Song fromMediaMetadata(MediaMetadata metadata) {
@@ -82,7 +82,7 @@ public class Song {
         if (duration > 0) {
             songBuilder.duration(duration);
         }
-        if (!album.isEmpty() && !artist.isEmpty()) {
+        if (album != null && !album.isEmpty() && !artist.isEmpty()) {
             songBuilder.album(new Album(album, new Artist(artist)));
         }
 
