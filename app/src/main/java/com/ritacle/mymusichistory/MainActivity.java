@@ -1,6 +1,7 @@
 package com.ritacle.mymusichistory;
 
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.session.MediaSessionManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,11 +32,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.ritacle.mymusichistory.fragments.ListensFragment;
 import com.ritacle.mymusichistory.fragments.topArtists.TopArtistsMainFragment;
 import com.ritacle.mymusichistory.fragments.topSongs.TopSongsMainFragment;
-import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
-import com.ritacle.mymusichistory.service.SendService;
-
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
+import com.ritacle.mymusichistory.service.ListenerService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -42,20 +40,20 @@ public class MainActivity extends AppCompatActivity
     private MediaSessionManager.OnActiveSessionsChangedListener mListener;
 
     private static final int REQUEST_CODE_EMAIL = 1;
-    private BlockingDeque<Scrobble> listens;
-    private SendService sendService;
     private String accountName;
     private FragmentTransaction fragmentTransaction;
     private NavigationView navigationView;
     private MMHApplication application;
+    private AlertDialog alertDialog;
 
     public MainActivity() {
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        askForNotificationPermission();
 
         application = (MMHApplication) getApplication();
         application.startListenerService();
@@ -117,17 +115,30 @@ public class MainActivity extends AppCompatActivity
         rvListens.setLayoutManager(new LinearLayoutManager(this));
 */
 
-
-        listens = new LinkedBlockingDeque<>();
-        // sendService = new SendService(getApplicationContext(), listens);
-
         // ArrayAdapter<Listen> listAdapter = new ArrayAdapter<Listen>.createFromResource(getApplicationContext(),)
         // listenHistoryView.setAdapter(listAdapter);
 
-        //  registerReceiver(new ListeningBroadcastReceiver(listens, this), createFilter());
-        //  performOnBackgroundThread(sendService);
+    }
 
+    private void askForNotificationPermission() {
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+        }
 
+        if (!ListenerService.isNotificationAccessEnabled(this)) {
+            alertDialog =
+                    new AlertDialog.Builder(this)
+                            .setTitle("Before we start")
+                            .setMessage("The application needs access to notifications to continue working")
+                            .setPositiveButton(
+                                    android.R.string.ok,
+                                    (dialogInterface, i) -> {
+                                        String action;
+                                        action = Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS;
+                                        startActivity(new Intent(action));
+                                    })
+                            .show();
+        }
     }
 
 
@@ -143,20 +154,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this,
                     SettingsActivity.class);
@@ -205,7 +209,6 @@ public class MainActivity extends AppCompatActivity
         Intent intent = AccountPicker.newChooseAccountIntent(null, null,
                 new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
                 false, null, null, null, null);
-
         try {
             startActivityForResult(intent, REQUEST_CODE_EMAIL);
         } catch (ActivityNotFoundException e) {
@@ -227,21 +230,6 @@ public class MainActivity extends AppCompatActivity
         return accountName;
     }
 
-
-    private void performOnBackgroundThread(final Runnable runnable) {
-        final Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    runnable.run();
-                } finally {
-
-                }
-            }
-        };
-        t.start();
-
-    }
 
     private IntentFilter createFilter() {
         IntentFilter intentFilter = new IntentFilter();
@@ -268,7 +256,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
         if (key.equals("user_name")) {
             String savedUsername = sharedPreferences.getString("user_name", "User");
             View headerView = navigationView.getHeaderView(0);
