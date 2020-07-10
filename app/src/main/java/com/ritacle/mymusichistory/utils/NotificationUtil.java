@@ -28,7 +28,7 @@ public class NotificationUtil {
 
             NotificationChannel nowListeningChannel =
                     new NotificationChannel(
-                            CHANNEL_ID_NOW_LISTENING, "CURRENTLY_LISTENING",
+                            CHANNEL_ID_NOW_LISTENING, "Currently playing song",
                             NotificationManager.IMPORTANCE_LOW);
 
             notificationManager.createNotificationChannel(nowListeningChannel);

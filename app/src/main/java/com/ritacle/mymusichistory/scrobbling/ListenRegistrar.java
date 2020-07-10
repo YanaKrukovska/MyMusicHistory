@@ -1,8 +1,14 @@
 package com.ritacle.mymusichistory.scrobbling;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
+
+import com.google.android.material.navigation.NavigationView;
 import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
@@ -12,18 +18,21 @@ import com.ritacle.mymusichistory.utils.NotificationUtil;
 import java.util.Date;
 import java.util.Random;
 
-public class ListenRegistrar {
+public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private long MINIMUM_LISTENING_TIME = 15 * 1000;
-    private static int LISTEN_THRESHOLD = 50 * 1000;
+    private static final long MINIMUM_LISTENING_TIME = 15 * 1000;
 
     private static final String TAG = "Listen registrar";
     private Context context;
     private NotificationUtil notificationUtil;
+    private int listenThresholdPercent;
 
     public ListenRegistrar(Context context, NotificationUtil notificationUtil) {
         this.context = context;
         this.notificationUtil = notificationUtil;
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        settings.registerOnSharedPreferenceChangeListener(this);
+        this.listenThresholdPercent = settings.getInt("listening_threshold", 50);
     }
 
     public Context getContext() {
@@ -45,7 +54,7 @@ public class ListenRegistrar {
         }
 
         int playCount = (int) (playTime / duration);
-        long listenThreshold = Math.min(LISTEN_THRESHOLD, duration / 2);
+        long listenThreshold = (duration * listenThresholdPercent) / 100;
 
         if (duration < MINIMUM_LISTENING_TIME) {
             return;
@@ -94,7 +103,7 @@ public class ListenRegistrar {
         if (duration < MINIMUM_LISTENING_TIME) {
             return -1;
         }
-        long listenThreshold = Math.min(duration / 2, LISTEN_THRESHOLD);
+        long listenThreshold = (duration * listenThresholdPercent) / 100;
         long nextListenAt = playbackItem.getPlaysScrobbled() * duration + listenThreshold;
 
         return Math.max(0, nextListenAt - playbackItem.getAmountPlayed());
@@ -105,4 +114,15 @@ public class ListenRegistrar {
     }
 
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("listening_threshold")) {
+            listenThresholdPercent = sharedPreferences.getInt("listening_threshold", 50);
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
 }
