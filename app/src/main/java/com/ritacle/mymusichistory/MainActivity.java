@@ -5,9 +5,7 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
@@ -37,17 +35,12 @@ import com.ritacle.mymusichistory.service.ListenerService;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private MediaSessionManager.OnActiveSessionsChangedListener mListener;
-
     private static final int REQUEST_CODE_EMAIL = 1;
     private String accountName;
     private FragmentTransaction fragmentTransaction;
     private NavigationView navigationView;
     private MMHApplication application;
     private AlertDialog alertDialog;
-
-    public MainActivity() {
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,30 +221,6 @@ public class MainActivity extends AppCompatActivity
 
     public String getAccountName() {
         return accountName;
-    }
-
-
-    private IntentFilter createFilter() {
-        IntentFilter intentFilter = new IntentFilter();
-
-        //  intentFilter.addAction("com.android.music.musicservicecommand");
-        intentFilter.addAction("com.android.music.metachanged");
-        intentFilter.addAction("com.android.music.playstatechanged");
-        intentFilter.addAction("com.android.music.updateprogress");
-       /*
-        intentFilter.addAction("com.htc.music.metachanged");
-        intentFilter.addAction("fm.last.android.metachanged");
-        intentFilter.addAction("com.sec.android.app.music.metachanged");
-        intentFilter.addAction("com.nullsoft.winamp.metachanged");
-        intentFilter.addAction("com.amazon.mp3.metachanged");
-        intentFilter.addAction("com.miui.player.metachanged");
-        intentFilter.addAction("com.real.IMP.metachanged");
-        intentFilter.addAction("com.sonyericsson.music.metachanged");
-        intentFilter.addAction("com.rdio.android.metachanged");
-        intentFilter.addAction("com.samsung.sec.android.MusicPlayer.metachanged");
-        intentFilter.addAction("com.andrew.apollo.metachanged");*/
-
-        return intentFilter;
     }
 
     @Override
