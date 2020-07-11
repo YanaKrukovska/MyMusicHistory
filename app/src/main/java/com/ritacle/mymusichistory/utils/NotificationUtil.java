@@ -47,7 +47,7 @@ public class NotificationUtil {
                         .setSmallIcon(R.drawable.ic_logo_notif)
                         .setContentTitle(String.format("%s — %s", receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle()))
                         .setContentText(status)
-                        .setOngoing(true)
+                        .setOngoing(false)
                         .setCategory(Notification.CATEGORY_STATUS)
                         .setContentIntent(clickPendingIntent);
 
