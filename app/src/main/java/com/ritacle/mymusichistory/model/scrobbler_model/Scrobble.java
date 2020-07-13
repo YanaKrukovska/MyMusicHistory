@@ -1,9 +1,9 @@
 package com.ritacle.mymusichistory.model.scrobbler_model;
 
-
 import android.annotation.TargetApi;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.util.Date;
@@ -55,6 +55,7 @@ public class Scrobble {
         this.syncId = syncId;
     }
 
+    @NonNull
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override

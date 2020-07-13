@@ -1,30 +1,64 @@
 package com.ritacle.mymusichistory;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.res.Configuration;
 
+import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
+import com.ritacle.mymusichistory.service.ListenerService;
+import com.ritacle.mymusichistory.service.SendService;
+
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+
 public class MMHApplication extends Application {
-    // Called when the application is starting, before any other application objects have been created.
-    // Overriding this method is totally optional!
+
+    private static final BlockingDeque<Scrobble> listens = new LinkedBlockingDeque<>();
+    private SendService sendService;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // Required initialization logic here!
+        sendService = new SendService(this, listens);
+        performOnBackgroundThread(sendService);
     }
 
-    // Called by the system when the device configuration changes while your component is running.
-    // Overriding this method is totally optional!
+    private void performOnBackgroundThread(final Runnable runnable) {
+        final Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    runnable.run();
+                } finally {
+
+                }
+            }
+        };
+        t.start();
+
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
 
-    // This is called when the overall system is running low on memory,
-    // and would like actively running processes to tighten their belts.
-    // Overriding this method is totally optional!
     @Override
     public void onLowMemory() {
         super.onLowMemory();
+    }
+
+    public void startListenerService() {
+        if (ListenerService.isNotificationAccessEnabled(this)) {
+            startService(new Intent(this, ListenerService.class));
+        }
+    }
+
+    public static void submit(Scrobble message) throws InterruptedException {
+        listens.put(message);
+    }
+
+    public static Scrobble take() throws InterruptedException {
+        return listens.take();
     }
 }
