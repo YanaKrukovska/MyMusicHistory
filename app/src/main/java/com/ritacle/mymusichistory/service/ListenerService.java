@@ -8,6 +8,7 @@ import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.net.Uri;
 import android.os.Build;
 import android.service.notification.NotificationListenerService;
 import android.util.Log;
@@ -16,13 +17,18 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.ritacle.mymusichistory.scrobbling.PlaybackTracker;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 public class ListenerService extends NotificationListenerService
@@ -64,6 +70,20 @@ public class ListenerService extends NotificationListenerService
     @Override
     public void onActiveSessionsChanged(List<MediaController> activeMediaControllers) {
         Log.d(TAG, "Active MediaSessions changed");
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(new File("content://media/internal/audio/media")), "audio/*");
+        List activities = getPackageManager().queryIntentActivities(intent, 0);
+        int count = activities.size();
+
+
+        Set<MediaController> existingControllers =
+                ImmutableSet.copyOf(Iterables.filter(mediaControllers, controllerCallbacks::containsKey));
+        Set<MediaController> newControllers = new HashSet<>(activeMediaControllers);
+
+        Set<MediaController> toRemove = Sets.difference(existingControllers, newControllers);
+        Set<MediaController> toAdd = Sets.difference(newControllers, existingControllers);
+
 
         for (final MediaController controller : activeMediaControllers) {
             String packageName = controller.getPackageName();
