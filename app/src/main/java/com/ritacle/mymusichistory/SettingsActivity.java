@@ -1,9 +1,6 @@
 package com.ritacle.mymusichistory;
 
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
@@ -54,7 +51,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
-
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -63,26 +59,11 @@ public class SettingsActivity extends AppCompatActivity {
             List<ResolveInfo> musicPlayers = playersUtil.findPlayers();
 
             for (int i = 0; i < musicPlayers.size(); i++) {
+                ResolveInfo player = musicPlayers.get(i);
                 PreferenceScreen preferenceScreen = getPreferenceManager().getPreferenceScreen();
                 CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getContext());
-
-                ApplicationInfo applicationInfo;
-                try {
-                    applicationInfo = getContext().getPackageManager().getApplicationInfo(musicPlayers.get(i).activityInfo.packageName, 0);
-                } catch (final PackageManager.NameNotFoundException e) {
-                    applicationInfo = null;
-                }
-                final String applicationName = (String) (applicationInfo != null ? getContext().getPackageManager().getApplicationLabel(applicationInfo) : musicPlayers.get(i).activityInfo.packageName);
-
-                checkBoxPreference.setTitle(applicationName);
-
-                try {
-                    Drawable icon = getContext().getPackageManager().getApplicationIcon(musicPlayers.get(i).activityInfo.packageName);
-                    checkBoxPreference.setIcon(icon);
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-
+                checkBoxPreference.setTitle(playersUtil.getApplicationName(player));
+                checkBoxPreference.setIcon(playersUtil.getApplicationIcon(player));
                 checkBoxPreference.setChecked(false);
                 preferenceScreen.addItemFromInflater(checkBoxPreference);
             }
