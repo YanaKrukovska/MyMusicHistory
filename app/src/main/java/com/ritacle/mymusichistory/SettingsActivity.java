@@ -64,7 +64,8 @@ public class SettingsActivity extends AppCompatActivity {
                 CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getContext());
                 checkBoxPreference.setTitle(playersUtil.getApplicationName(player));
                 checkBoxPreference.setIcon(playersUtil.getApplicationIcon(player));
-                checkBoxPreference.setChecked(false);
+                checkBoxPreference.setKey("player." + player.activityInfo.packageName);
+                checkBoxPreference.setDefaultValue(false);
                 preferenceScreen.addItemFromInflater(checkBoxPreference);
             }
 

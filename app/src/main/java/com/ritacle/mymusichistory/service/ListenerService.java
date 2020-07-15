@@ -8,27 +8,22 @@ import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
-import android.net.Uri;
 import android.os.Build;
 import android.service.notification.NotificationListenerService;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import com.ritacle.mymusichistory.scrobbling.PlaybackTracker;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 public class ListenerService extends NotificationListenerService
@@ -39,6 +34,7 @@ public class ListenerService extends NotificationListenerService
     private List<MediaController> mediaControllers = new ArrayList<>();
     private Map<MediaController, MediaController.Callback> controllerCallbacks = new WeakHashMap<>();
     private PlaybackTracker playbackTracker;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
@@ -48,10 +44,16 @@ public class ListenerService extends NotificationListenerService
             Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             startActivity(intent);
         }
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        settings.registerOnSharedPreferenceChangeListener(this);
+
         NotificationUtil notificationUtil =
                 new NotificationUtil(this);
 
         playbackTracker = new PlaybackTracker(getApplicationContext(), notificationUtil);
+
+
         MediaSessionManager mediaSessionManager =
                 (MediaSessionManager)
                         getApplicationContext().getSystemService(Context.MEDIA_SESSION_SERVICE);
@@ -70,20 +72,6 @@ public class ListenerService extends NotificationListenerService
     @Override
     public void onActiveSessionsChanged(List<MediaController> activeMediaControllers) {
         Log.d(TAG, "Active MediaSessions changed");
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File("content://media/internal/audio/media")), "audio/*");
-        List activities = getPackageManager().queryIntentActivities(intent, 0);
-        int count = activities.size();
-
-
-        Set<MediaController> existingControllers =
-                ImmutableSet.copyOf(Iterables.filter(mediaControllers, controllerCallbacks::containsKey));
-        Set<MediaController> newControllers = new HashSet<>(activeMediaControllers);
-
-        Set<MediaController> toRemove = Sets.difference(existingControllers, newControllers);
-        Set<MediaController> toAdd = Sets.difference(newControllers, existingControllers);
-
 
         for (final MediaController controller : activeMediaControllers) {
             String packageName = controller.getPackageName();
@@ -114,7 +102,6 @@ public class ListenerService extends NotificationListenerService
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.startsWith("player.")) {
             final String packageName = key.substring(7);
-
             if (sharedPreferences.getBoolean(key, true)) {
                 Log.d(TAG, "Player enabled, re-registering callbacks");
                 onActiveSessionsChanged(mediaControllers);
