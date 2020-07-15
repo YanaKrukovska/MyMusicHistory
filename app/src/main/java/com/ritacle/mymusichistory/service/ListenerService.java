@@ -46,6 +46,7 @@ public class ListenerService extends NotificationListenerService
         }
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sharedPreferences = settings;
         settings.registerOnSharedPreferenceChangeListener(this);
 
         NotificationUtil notificationUtil =
@@ -73,6 +74,8 @@ public class ListenerService extends NotificationListenerService
     public void onActiveSessionsChanged(List<MediaController> activeMediaControllers) {
         Log.d(TAG, "Active MediaSessions changed");
 
+        excludeDisabledPlayers(activeMediaControllers);
+
         for (final MediaController controller : activeMediaControllers) {
             String packageName = controller.getPackageName();
             Log.d(TAG, String.format("Listening for events from %s", packageName));
@@ -97,6 +100,21 @@ public class ListenerService extends NotificationListenerService
         }
         mediaControllers = activeMediaControllers;
     }
+
+    private void excludeDisabledPlayers(List<MediaController> activeMediaControllers) {
+        for (int i = 0; i < activeMediaControllers.size(); i++) {
+            MediaController player = activeMediaControllers.get(i);
+            String playerPackage = "player" + player.getPackageName();
+            if (sharedPreferences.getBoolean(playerPackage, false)) {
+                if (controllerCallbacks.get(player) != null) {
+                    player.unregisterCallback(controllerCallbacks.get(player));
+                }
+                playbackTracker.handleSessionTermination(player.getPackageName());
+                activeMediaControllers.remove(player);
+            }
+        }
+    }
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -126,11 +144,19 @@ public class ListenerService extends NotificationListenerService
 
     private void controllerPlaybackStateChanged(MediaController controller, PlaybackState state) {
         Log.d(TAG, "controller playback state changed");
-        playbackTracker.handlePlaybackStateChange(controller.getPackageName(), state);
+        String controllerPackageName = controller.getPackageName();
+        //TODO: change true to false when all players (for example Spotify) will be found
+        if (sharedPreferences.getBoolean("player." + controllerPackageName, true)) {
+            playbackTracker.handlePlaybackStateChange(controllerPackageName, state);
+        }
     }
 
     private void controllerMetadataChanged(MediaController controller, MediaMetadata metadata) {
         Log.d(TAG, "controller metadata changed");
-        playbackTracker.handleMetadataChange(controller.getPackageName(), metadata);
+        String controllerPackageName = controller.getPackageName();
+        //TODO: change true to false when all players (for example Spotify) will be found
+        if (sharedPreferences.getBoolean("player." + controllerPackageName, true)) {
+            playbackTracker.handleMetadataChange(controllerPackageName, metadata);
+        }
     }
 }
