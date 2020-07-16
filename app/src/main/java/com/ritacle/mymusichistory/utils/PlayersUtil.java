@@ -1,14 +1,12 @@
 package com.ritacle.mymusichistory.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.os.Build;
 
-import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PlayersUtil {
@@ -19,27 +17,27 @@ public class PlayersUtil {
         this.context = context;
     }
 
-    public List<ResolveInfo> findPlayers() {
-        Intent resolve_intent = new Intent();
-        resolve_intent.setAction(android.content.Intent.ACTION_VIEW);
-        resolve_intent.setDataAndType(Uri.fromFile(new File("/some/path/to/a/file")), "audio/*");
-        return context.getPackageManager().queryIntentActivities(resolve_intent, 0);
-    }
-
-    public String getApplicationName(ResolveInfo resolveInfo) {
-        ApplicationInfo applicationInfo;
-        try {
-            applicationInfo = context.getPackageManager().getApplicationInfo(resolveInfo.activityInfo.packageName, 0);
-        } catch (final PackageManager.NameNotFoundException e) {
-            applicationInfo = null;
+    public List<ApplicationInfo> findPlayers() {
+        List<ApplicationInfo> allApplications = context.getPackageManager().getInstalledApplications(0);
+        List<ApplicationInfo> result = new LinkedList<>();
+        for (int i = 0; i < allApplications.size(); i++) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (allApplications.get(i).category == ApplicationInfo.CATEGORY_AUDIO) {
+                    result.add(allApplications.get(i));
+                }
+            }
         }
-        return (String) (applicationInfo != null ? context.getPackageManager().getApplicationLabel(applicationInfo) : resolveInfo.activityInfo.packageName);
+        return result;
     }
 
-    public Drawable getApplicationIcon(ResolveInfo resolveInfo) {
+    public String getApplicationName(ApplicationInfo resolveInfo) {
+        return (String) context.getPackageManager().getApplicationLabel(resolveInfo);
+    }
+
+    public Drawable getApplicationIcon(ApplicationInfo resolveInfo) {
         Drawable icon = null;
         try {
-            icon = context.getPackageManager().getApplicationIcon(resolveInfo.activityInfo.packageName);
+            icon = context.getPackageManager().getApplicationIcon(resolveInfo.packageName);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

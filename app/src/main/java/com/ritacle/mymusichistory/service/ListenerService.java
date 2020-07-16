@@ -145,8 +145,7 @@ public class ListenerService extends NotificationListenerService
     private void controllerPlaybackStateChanged(MediaController controller, PlaybackState state) {
         Log.d(TAG, "controller playback state changed");
         String controllerPackageName = controller.getPackageName();
-        //TODO: change true to false when all players (for example Spotify) will be found
-        if (sharedPreferences.getBoolean("player." + controllerPackageName, true)) {
+        if (sharedPreferences.getBoolean("player." + controllerPackageName, false)) {
             playbackTracker.handlePlaybackStateChange(controllerPackageName, state);
         }
     }
@@ -154,8 +153,7 @@ public class ListenerService extends NotificationListenerService
     private void controllerMetadataChanged(MediaController controller, MediaMetadata metadata) {
         Log.d(TAG, "controller metadata changed");
         String controllerPackageName = controller.getPackageName();
-        //TODO: change true to false when all players (for example Spotify) will be found
-        if (sharedPreferences.getBoolean("player." + controllerPackageName, true)) {
+        if (sharedPreferences.getBoolean("player." + controllerPackageName, false)) {
             playbackTracker.handleMetadataChange(controllerPackageName, metadata);
         }
     }

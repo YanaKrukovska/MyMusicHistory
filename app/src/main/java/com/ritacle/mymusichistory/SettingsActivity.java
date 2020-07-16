@@ -1,6 +1,6 @@
 package com.ritacle.mymusichistory;
 
-import android.content.pm.ResolveInfo;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
@@ -56,15 +56,15 @@ public class SettingsActivity extends AppCompatActivity {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
             PlayersUtil playersUtil = new PlayersUtil(getContext());
-            List<ResolveInfo> musicPlayers = playersUtil.findPlayers();
+            List<ApplicationInfo> musicPlayers = playersUtil.findPlayers();
 
             for (int i = 0; i < musicPlayers.size(); i++) {
-                ResolveInfo player = musicPlayers.get(i);
+                ApplicationInfo player = musicPlayers.get(i);
                 PreferenceScreen preferenceScreen = getPreferenceManager().getPreferenceScreen();
                 CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getContext());
                 checkBoxPreference.setTitle(playersUtil.getApplicationName(player));
                 checkBoxPreference.setIcon(playersUtil.getApplicationIcon(player));
-                checkBoxPreference.setKey("player." + player.activityInfo.packageName);
+                checkBoxPreference.setKey("player." + player.packageName);
                 checkBoxPreference.setDefaultValue(false);
                 preferenceScreen.addItemFromInflater(checkBoxPreference);
             }
