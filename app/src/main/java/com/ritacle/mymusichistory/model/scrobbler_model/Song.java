@@ -15,6 +15,8 @@ public class Song {
     private Album album;
     private long duration;
 
+    private final static String UNKNOWN_ALBUM = "Unknown Album";
+
     public Song() {
     }
 
@@ -55,7 +57,7 @@ public class Song {
     }
 
     public boolean isValid() {
-        return title!= null && album != null && !title.equals("") && !album.getTitle().equals("");
+        return title != null && album != null && !title.equals("") && !album.getTitle().equals("");
     }
 
     public static Song fromMediaMetadata(MediaMetadata metadata) {
@@ -72,7 +74,7 @@ public class Song {
             }
         }
 
-       SongBuilder songBuilder = Song.builder();
+        SongBuilder songBuilder = Song.builder();
         songBuilder.title(title);
 
         if (duration < 1000) {
@@ -81,6 +83,9 @@ public class Song {
 
         if (duration > 0) {
             songBuilder.duration(duration);
+        }
+        if (album == null && artist != null) {
+            songBuilder.album(new Album(UNKNOWN_ALBUM, new Artist(artist)));
         }
         if (album != null && !album.isEmpty() && !artist.isEmpty()) {
             songBuilder.album(new Album(album, new Artist(artist)));
