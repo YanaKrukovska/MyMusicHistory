@@ -19,9 +19,9 @@ public class PlayerState {
     private Timer submissionTimer;
     private NotificationUtil notificationUtil;
 
-    public PlayerState(Context context, NotificationUtil notificationUtil) {
+    public PlayerState(Context context, NotificationUtil notificationUtil, ListenSender listenSender) {
         this.notificationUtil = notificationUtil;
-        this.listenRegistrar = new ListenRegistrar(context, notificationUtil);
+        this.listenRegistrar = new ListenRegistrar(context, notificationUtil, listenSender);
     }
 
     public void setPlaybackState(PlaybackState playbackState) {

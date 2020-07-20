@@ -1,4 +1,4 @@
-package com.ritacle.mymusichistory.service;
+package com.ritacle.mymusichistory.scrobbling;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -15,9 +15,12 @@ import androidx.annotation.RequiresApi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
+import com.ritacle.mymusichistory.service.StatisticRestService;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,19 +32,19 @@ import retrofit2.internal.EverythingIsNonNull;
 import static java.lang.Thread.sleep;
 
 
-public class SendService implements Runnable, Callback<Scrobble> {
+public class ListenSender implements Callback<Scrobble> {
 
     private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
     public static final int WAIT_FOR_CONNECTION = 120000;//600000;
     public static final int WAIT_FOR_NEXT_LISTEN_SENDING = 5000;
     private final StatisticRestService mmhRestAPI;
-    private BlockingDeque<Scrobble> listens;
+    private BlockingDeque<Scrobble> listens = new LinkedBlockingDeque<>();
+    private BlockingDeque<Scrobble> pendingListens = new LinkedBlockingDeque<>();
     private Context context;
 
 
-    public SendService(Context context, BlockingDeque<Scrobble> listens) {
+    public ListenSender(Context context) {
         this.context = context;
-        this.listens = listens;
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .create();
@@ -75,41 +78,57 @@ public class SendService implements Runnable, Callback<Scrobble> {
 
     @Override
     public void onFailure(Call<Scrobble> call, Throwable t) {
-        Log.d("Sending ", call.toString());
+       /* try {
+            listens.put(call.execute().body());
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }*/
+        Log.d("Failed to send ", call.toString());
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
-    @Override
-    public void run() {
-        try {
-            while (true) {
-                if (hasNetworkConnection()) {
-                    Scrobble listen = listens.take();
-                    Log.d("Processing ", listen.getSong().getTitle());
+    public void sendListen() {
 
-                    try {
-                        if (listenApplicableForSaving(listen)) {
-                            Log.d("MMH", "Need be saved ");
+        if (hasNetworkConnection()) {
+
+            for (int i = 0; i < listens.size(); i++) {
+
+                Scrobble listen = null;
+                try {
+                    listen = listens.take();
+                    Log.d("Processing ", listen.getSong().getTitle());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    if (listen != null && listenApplicableForSaving(listen)) {
+                        Log.d("MMH", "Need be saved ");
+                        try {
                             sentToMMH(listen);
+                        } catch (IOException e) {
+                            Log.d("Sending to server failed", e.getMessage());
                             listens.put(listen);
                         }
-                    } catch (Exception e) {
-                        listens.put(listen);
                     }
-
-                    sleep(WAIT_FOR_NEXT_LISTEN_SENDING);
-                } else {
-                    Log.d("Network is  unavailable. Waiting for  ", "" + WAIT_FOR_CONNECTION / 1000);
-                    sleep(WAIT_FOR_CONNECTION);
+                } catch (Exception e) {
+                    try {
+                        listens.put(listen);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
 
+        } else {
+            Log.d("Network is  unavailable. Waiting for  ", "" + WAIT_FOR_CONNECTION / 1000);
         }
+
+
     }
+
 
     private boolean listenApplicableForSaving(Scrobble listen) throws IOException {
         Log.d("Checking listen sync: ", "" + listen.getUser().getId() + ":" + listen.getSyncId());
@@ -126,21 +145,17 @@ public class SendService implements Runnable, Callback<Scrobble> {
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
-    private boolean sentToMMH(Scrobble listen) throws InterruptedException {
+    private boolean sentToMMH(Scrobble listen) throws IOException {
         Call<Scrobble> call = mmhRestAPI.addListenIntoStat(listen);
         //call.enqueue(this);
-
-        try {
-            Log.d("Server call started for: ", listen.toString());
-            Response<Scrobble> response = call.execute();
-            if (!response.isSuccessful()) {
-                Log.d("Server call was unsuccessful: ", "response CODE : " + response.code() + " Listen: " + listen.getSong().getTitle());
-            } else {
-                Log.d("SUCCESS: ", " Listen: " + listen.getSong().getTitle());
-            }
-        } catch (IOException e) {
-            Log.d("Sending to server failed", e.getMessage());
+        Log.d("Server call started for: ", listen.toString());
+        Response<Scrobble> response = call.execute();
+        if (!response.isSuccessful()) {
+            Log.d("Server call was unsuccessful: ", "response CODE : " + response.code() + " Listen: " + listen.getSong().getTitle());
+        } else {
+            Log.d("SUCCESS: ", " Listen: " + listen.getSong().getTitle());
         }
+
 
         return false;
     }
@@ -180,4 +195,12 @@ public class SendService implements Runnable, Callback<Scrobble> {
         return isConnected;
     }
 
+    public void submit(Scrobble message) throws InterruptedException {
+        listens.put(message);
+        sendListen();
+    }
+
+    public Scrobble take() throws InterruptedException {
+        return listens.take();
+    }
 }

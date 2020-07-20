@@ -14,13 +14,13 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class MMHApplication extends Application {
 
     private static final BlockingDeque<Scrobble> listens = new LinkedBlockingDeque<>();
-    private SendService sendService;
+   // private SendService sendService;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sendService = new SendService(this, listens);
-        performOnBackgroundThread(sendService);
+        //sendService = new SendService(this, listens);
+       // performOnBackgroundThread(sendService);
     }
 
     private void performOnBackgroundThread(final Runnable runnable) {

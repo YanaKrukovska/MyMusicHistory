@@ -34,9 +34,12 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
     private NotificationUtil notificationUtil;
     private int listenThresholdPercent;
 
-    public ListenRegistrar(Context context, NotificationUtil notificationUtil) {
+    private ListenSender listenSender;
+
+    public ListenRegistrar(Context context, NotificationUtil notificationUtil, ListenSender listenSender) {
         this.context = context;
         this.notificationUtil = notificationUtil;
+        this.listenSender = listenSender;
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         settings.registerOnSharedPreferenceChangeListener(this);
         this.listenThresholdPercent = settings.getInt("listening_threshold", 50);
@@ -95,7 +98,8 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
         listen.setSyncId(new Random().nextLong());
 
         try {
-            MMHApplication.submit(listen);
+           // MMHApplication.submit(listen);
+            listenSender.submit(listen);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

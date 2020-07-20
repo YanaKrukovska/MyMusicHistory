@@ -18,6 +18,7 @@ import androidx.preference.PreferenceManager;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
+import com.ritacle.mymusichistory.scrobbling.ListenSender;
 import com.ritacle.mymusichistory.scrobbling.PlaybackTracker;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
 
@@ -36,6 +37,8 @@ public class ListenerService extends NotificationListenerService
     private PlaybackTracker playbackTracker;
     private SharedPreferences sharedPreferences;
 
+    public ListenSender listenSender;
+
     @Override
     public void onCreate() {
         Log.d(TAG, "NotificationListenerService started");
@@ -52,7 +55,8 @@ public class ListenerService extends NotificationListenerService
         NotificationUtil notificationUtil =
                 new NotificationUtil(this);
 
-        playbackTracker = new PlaybackTracker(getApplicationContext(), notificationUtil);
+        listenSender = new ListenSender(getApplicationContext());
+        playbackTracker = new PlaybackTracker(getApplicationContext(), notificationUtil, listenSender);
 
 
         MediaSessionManager mediaSessionManager =
