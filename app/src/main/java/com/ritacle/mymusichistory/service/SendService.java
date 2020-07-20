@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
@@ -31,7 +32,7 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import static java.lang.Thread.sleep;
 
 
-public class  SendService  implements Runnable, Callback<Scrobble> {
+public class SendService implements Runnable, Callback<Scrobble> {
 
     private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
     public static final int WAIT_FOR_CONNECTION = 120000;//600000;
@@ -87,7 +88,7 @@ public class  SendService  implements Runnable, Callback<Scrobble> {
     public void run() {
         try {
             while (true) {
-                if (haveNetworkConnection()) {
+                if (hasNetworkConnection()) {
                     Scrobble listen = listens.take();
                     Log.d("Processing ", listen.getSong().getTitle());
 
@@ -118,11 +119,11 @@ public class  SendService  implements Runnable, Callback<Scrobble> {
         Call<Boolean> call = mmhRestAPI.checkListenSync(listen.getUser().getId(), listen.getSyncId());
 
         Response<Boolean> response = call.execute();
-        if ( response.body() == null || !response.isSuccessful()) {
+        if (response.body() == null || !response.isSuccessful()) {
             Log.e("MMH", "Sync check was unsuccessful ");
             throw new IOException("Sync check was unsuccessful");
         }
-        return  !response.body();
+        return !response.body();
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -148,28 +149,38 @@ public class  SendService  implements Runnable, Callback<Scrobble> {
     }
 
 
-    private boolean haveNetworkConnection() {
+    private boolean hasNetworkConnection() {
+
         boolean isConnected = false;
 
-        ConnectivityManager cm = getSystemService(context, ConnectivityManager.class);
-
-        Network[] networks;
-        if (cm != null) {
-            networks = cm.getAllNetworks();
-            for (Network network : networks) {
-                NetworkInfo networkInfo = cm.getNetworkInfo(network);
-                if ((networkInfo.getTypeName().equalsIgnoreCase("MOBILE")
-                        || (networkInfo.getTypeName().equalsIgnoreCase("WIFI"))) && networkInfo.isConnected()) {
-                    isConnected = true;
-                    break;
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (cm != null) {
+                NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+                if (capabilities != null) {
+                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                        isConnected = true;
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                        isConnected = true;
+                    }
                 }
             }
+        } else {
+            Network[] networks;
+            if (cm != null) {
+                networks = cm.getAllNetworks();
+                for (Network network : networks) {
+                    NetworkInfo networkInfo = cm.getNetworkInfo(network);
+                    if ((networkInfo.getTypeName().equalsIgnoreCase("MOBILE")
+                            || (networkInfo.getTypeName().equalsIgnoreCase("WIFI"))) && networkInfo.isConnected()) {
+                        isConnected = true;
+                        break;
+                    }
+                }
 
+            }
         }
-
-
         return isConnected;
     }
-
 
 }
