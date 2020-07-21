@@ -18,7 +18,7 @@ import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.service.StatisticRestService;
 
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Date;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -29,17 +29,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.internal.EverythingIsNonNull;
 
-import static java.lang.Thread.sleep;
-
 
 public class ListenSender implements Callback<Scrobble> {
 
     private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
-    public static final int WAIT_FOR_CONNECTION = 120000;//600000;
-    public static final int WAIT_FOR_NEXT_LISTEN_SENDING = 5000;
     private final StatisticRestService mmhRestAPI;
     private BlockingDeque<Scrobble> listens = new LinkedBlockingDeque<>();
-    private BlockingDeque<Scrobble> pendingListens = new LinkedBlockingDeque<>();
     private Context context;
 
 
@@ -78,11 +73,6 @@ public class ListenSender implements Callback<Scrobble> {
 
     @Override
     public void onFailure(Call<Scrobble> call, Throwable t) {
-       /* try {
-            listens.put(call.execute().body());
-        } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
-        }*/
         Log.d("Failed to send ", call.toString());
     }
 
@@ -90,11 +80,10 @@ public class ListenSender implements Callback<Scrobble> {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
     public void sendListen() {
-
+        int listensListSize = listens.size();
         if (hasNetworkConnection()) {
 
-            for (int i = 0; i < listens.size(); i++) {
-
+            for (int i = 0; i < listensListSize; i++) {
                 Scrobble listen = null;
                 try {
                     listen = listens.take();
@@ -123,7 +112,7 @@ public class ListenSender implements Callback<Scrobble> {
             }
 
         } else {
-            Log.d("Network is  unavailable. Waiting for  ", "" + WAIT_FOR_CONNECTION / 1000);
+            Log.d("Network was  unavailable at", new Date().toString());
         }
 
 
@@ -147,7 +136,6 @@ public class ListenSender implements Callback<Scrobble> {
     @SuppressLint("LongLogTag")
     private boolean sentToMMH(Scrobble listen) throws IOException {
         Call<Scrobble> call = mmhRestAPI.addListenIntoStat(listen);
-        //call.enqueue(this);
         Log.d("Server call started for: ", listen.toString());
         Response<Scrobble> response = call.execute();
         if (!response.isSuccessful()) {
@@ -155,8 +143,6 @@ public class ListenSender implements Callback<Scrobble> {
         } else {
             Log.d("SUCCESS: ", " Listen: " + listen.getSong().getTitle());
         }
-
-
         return false;
     }
 
