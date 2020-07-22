@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
-import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
@@ -98,7 +97,6 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
         listen.setSyncId(new Random().nextLong());
 
         try {
-           // MMHApplication.submit(listen);
             listenSender.submit(listen);
         } catch (InterruptedException e) {
             e.printStackTrace();

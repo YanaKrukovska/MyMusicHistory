@@ -5,7 +5,6 @@ import android.media.MediaMetadata;
 import android.media.session.PlaybackState;
 
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
-import com.ritacle.mymusichistory.service.ListenerService;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
 
 import java.util.HashMap;
