@@ -15,10 +15,12 @@ public class PlaybackTracker {
     private Map<String, PlayerState> playerStates = new HashMap<>();
     private Context context;
     private NotificationUtil notificationUtil;
+    private ListenSender listenSender;
 
-    public PlaybackTracker(Context context, NotificationUtil notificationUtil) {
+    public PlaybackTracker(Context context, NotificationUtil notificationUtil, ListenSender listenSender) {
         this.context = context;
         this.notificationUtil = notificationUtil;
+        this.listenSender = listenSender;
     }
 
     public void handlePlaybackStateChange(String player, PlaybackState playbackState) {
@@ -56,7 +58,7 @@ public class PlaybackTracker {
         PlayerState playerState = playerStates.get(player);
 
         if (!playerStates.containsKey(player)) {
-            playerState = new PlayerState(context, notificationUtil);
+            playerState = new PlayerState(context, notificationUtil, listenSender);
             playerStates.put(player, playerState);
         }
 

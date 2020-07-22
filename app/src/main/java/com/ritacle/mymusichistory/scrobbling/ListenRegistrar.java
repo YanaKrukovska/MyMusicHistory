@@ -2,6 +2,7 @@ package com.ritacle.mymusichistory.scrobbling;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -9,14 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
-import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
+import com.ritacle.mymusichistory.utils.DataUtils;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
 
-import java.util.Date;
+import java.text.DateFormat;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Random;
+import java.util.TimeZone;
 
 public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -27,9 +33,12 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
     private NotificationUtil notificationUtil;
     private int listenThresholdPercent;
 
-    public ListenRegistrar(Context context, NotificationUtil notificationUtil) {
+    private ListenSender listenSender;
+
+    public ListenRegistrar(Context context, NotificationUtil notificationUtil, ListenSender listenSender) {
         this.context = context;
         this.notificationUtil = notificationUtil;
+        this.listenSender = listenSender;
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         settings.registerOnSharedPreferenceChangeListener(this);
         this.listenThresholdPercent = settings.getInt("listening_threshold", 50);
@@ -84,13 +93,25 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
         user.setId(getUserID(user.getMail()));
         listen.setUser(user);
         listen.setSong(song);
-        listen.setListenDate(new Date());
+        setListenDateTime(listen);
         listen.setSyncId(new Random().nextLong());
 
         try {
-            MMHApplication.submit(listen);
+            listenSender.submit(listen);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void setListenDateTime(Scrobble listen) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+            utc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            listen.setListenDate(DataUtils.createFullDate(utc.getYear(), utc.getMonthValue(), utc.getDayOfMonth(), utc.getHour(), utc.getMinute(), utc.getSecond()));
+        } else {
+            DateFormat df = DateFormat.getDateTimeInstance(1, 1, Locale.ENGLISH);
+            df.setTimeZone(TimeZone.getTimeZone("utc"));
+            listen.setListenDate(df.getCalendar().getTime());
         }
     }
 
