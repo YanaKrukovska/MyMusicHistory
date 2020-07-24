@@ -1,5 +1,6 @@
 package com.ritacle.mymusichistory.fragments.topArtists;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,17 +11,14 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-import com.ritacle.mymusichistory.MainActivity;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopArtistsPagerAdapter;
-import com.ritacle.mymusichistory.adapters.TopSongsPagerAdapter;
-import com.ritacle.mymusichistory.fragments.topSongs.TopSongsFragment;
 
 import java.util.Date;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.ritacle.mymusichistory.utils.DataUtils.addMonth;
 import static com.ritacle.mymusichistory.utils.DataUtils.daysBetween;
-
 
 public class TopArtistsMainFragment extends Fragment {
 
@@ -38,7 +36,8 @@ public class TopArtistsMainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        MAIL = ((MainActivity) getActivity()).getAccountName();
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("login", MODE_PRIVATE);
+        MAIL = sharedPreferences.getString("mail", "");
         View rootView = inflater.inflate(R.layout.top_artists_main, container, false);
 
         viewPager = (ViewPager) rootView.findViewById(R.id.view_pager);

@@ -1,6 +1,7 @@
 package com.ritacle.mymusichistory.fragments;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.ritacle.mymusichistory.MainActivity;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.LastListensAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
@@ -27,13 +27,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ListensFragment extends Fragment {
 
     private SwipeRefreshLayout swipeToRefresh;
     private LastListensAdapter adapter;
     private ProgressDialog progressDialog;
     private RecyclerView rvListens;
-
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -52,7 +53,6 @@ public class ListensFragment extends Fragment {
         swipeToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeToRefresh);
         swipeToRefresh.setColorSchemeResources(R.color.colorAccent);
 
-
         swipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -63,14 +63,13 @@ public class ListensFragment extends Fragment {
 
         addListens();
 
-
         return rootView;
     }
 
     private void addListens() {
         GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        //TODO: add getting user
-        Call<List<LastListen>> call = service.getSongReport(((MainActivity) getActivity()).getAccountName());
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("login", MODE_PRIVATE);
+        Call<List<LastListen>> call = service.getSongReport(sharedPreferences.getString("mail", ""));
         call.enqueue(new Callback<List<LastListen>>() {
             @Override
             public void onResponse(Call<List<LastListen>> call, Response<List<LastListen>> response) {

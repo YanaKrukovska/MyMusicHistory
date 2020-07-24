@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClientInstance {
 
     private static Retrofit retrofit;
-    private static final String BASE_URL = "https://my-music-history.herokuapp.com/api/report/";
+    private static final String BASE_URL = "https://my-music-history.herokuapp.com/api/";
 
     public static Retrofit getRetrofitInstance() {
 

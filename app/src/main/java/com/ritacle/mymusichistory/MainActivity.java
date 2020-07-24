@@ -1,9 +1,6 @@
 package com.ritacle.mymusichistory;
 
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,8 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.AccountPicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -35,8 +30,6 @@ import com.ritacle.mymusichistory.service.ListenerService;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final int REQUEST_CODE_EMAIL = 1;
-    private String accountName;
     private FragmentTransaction fragmentTransaction;
     private NavigationView navigationView;
     private MMHApplication application;
@@ -53,13 +46,6 @@ public class MainActivity extends AppCompatActivity
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         settings.registerOnSharedPreferenceChangeListener(this);
-
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        accountName = sharedPref.getString(getResources().getString(R.string.account_key), null);
-
-        if (accountName == null) {
-            getUser();
-        }
 
 //TODO: prevent exception when account name has not been defined yet during the first run
 
@@ -160,8 +146,6 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             return true;
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -197,31 +181,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void getUser() {
-
-        Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-                new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
-                false, null, null, null, null);
-        try {
-            startActivityForResult(intent, REQUEST_CODE_EMAIL);
-        } catch (ActivityNotFoundException e) {
-            // This device may not have Google Play Services installed.
-            // TODO: do something else
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_EMAIL && resultCode == RESULT_OK) {
-            accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            getPreferences(Context.MODE_PRIVATE).edit().putString(getResources().getString(R.string.account_key), accountName).apply();
-        }
-    }
-
-    public String getAccountName() {
-        return accountName;
-    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
