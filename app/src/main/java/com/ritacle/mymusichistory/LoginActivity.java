@@ -43,9 +43,9 @@ public class LoginActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
 
-        if (sharedPreferences.getBoolean("logged", false)) {
+        /*if (sharedPreferences.getBoolean("logged", false)) {
            goToMainActivity();
-        }
+        }*/
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             User user = response.body();
                             Log.d(TAG, "Found user: " + user.toString());
-                            sharedPreferences.edit().putBoolean("logged", true).putString("userName", user.getUserName()).putString("mail", user.getMail()).apply();
+                            sharedPreferences.edit().putBoolean("logged", true).putString("userName", user.getUserName()).putString("mail", user.getMail()).putLong("user_id", user.getId()).apply();
                             goToMainActivity();
                         } else {
                             Log.d(TAG, "User doesn't exist");

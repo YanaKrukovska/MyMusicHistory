@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final long MINIMUM_LISTENING_TIME = 15 * 1000;
@@ -88,9 +90,10 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
 
     private void registerSong(Song song) {
         Scrobble listen = new Scrobble();
+        SharedPreferences sharedPreferences = context.getSharedPreferences("login", MODE_PRIVATE);
         User user = new User();
-        user.setMail("jana.krua@gmail.com");
-        user.setId(getUserID(user.getMail()));
+        user.setMail(sharedPreferences.getString("mail", ""));
+        user.setId(sharedPreferences.getLong("user_id", -1));
         listen.setUser(user);
         listen.setSong(song);
         setListenDateTime(listen);
@@ -129,11 +132,6 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
 
         return Math.max(0, nextListenAt - playbackItem.getAmountPlayed());
     }
-
-    private long getUserID(String mail) {
-        return ("vkrukovskyy@gmail.com".equals(mail) || "v.krukovskyy@gmail.com".equals(mail)) ? 2L : 1L;
-    }
-
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
