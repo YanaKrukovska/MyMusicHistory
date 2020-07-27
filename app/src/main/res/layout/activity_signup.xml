@@ -23,6 +23,7 @@
                 android:id="@+id/input_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints=""
                 android:hint="@string/signup_input_name_hint"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -37,7 +38,8 @@
                 android:id="@+id/input_nickName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nickname"
+                android:hint="@string/sign_up_input_nickName_hint"
+                android:importantForAutofill="no"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,6 +53,7 @@
                 android:id="@+id/input_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints=""
                 android:hint="@string/signup_input_email_hint"
                 android:inputType="textEmailAddress" />
 
@@ -67,7 +70,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:hint="Birthday" />
+                android:focusable="true"
+                android:hint="@string/sign_up_input_birthDate_hint"
+                android:importantForAutofill="no" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -80,7 +85,8 @@
                 android:id="@+id/input_gender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Gender"
+                android:hint="@string/sign_up_input_gender_hint"
+                android:importantForAutofill="no"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,6 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/signup_input_password_hint"
+                android:importantForAutofill="no"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -110,6 +117,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/signup_input_repeat_password_hint"
+                android:importantForAutofill="no"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
