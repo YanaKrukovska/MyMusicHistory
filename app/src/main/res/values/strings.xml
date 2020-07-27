@@ -50,4 +50,11 @@
     <string name="login_input_password_hint">Password</string>
     <string name="login_button">Login</string>
 
+    <string-array name="gender_spinner">
+        <item>Female</item>
+        <item>Male</item>
+        <item>Other</item>
+        <item>Prefer not to tell</item>
+    </string-array>
+
 </resources>

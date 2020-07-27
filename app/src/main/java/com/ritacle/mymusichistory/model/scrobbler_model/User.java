@@ -3,6 +3,8 @@ package com.ritacle.mymusichistory.model.scrobbler_model;
 
 import androidx.annotation.NonNull;
 
+import java.util.Date;
+
 public class User {
 
     private String mail;
@@ -10,9 +12,34 @@ public class User {
     private String nickName;
     private String gender;
     private String password;
+    private Date birthday;
     private Long id;
 
     public User() {
+    }
+
+    public User(String mail, String userName, String password, Date birthday) {
+        this.mail = mail;
+        this.userName = userName;
+        this.password = password;
+        this.birthday = birthday;
+    }
+
+    public User(String mail, String userName, String nickName, String gender, String password, Date birthday) {
+        this.mail = mail;
+        this.userName = userName;
+        this.nickName = nickName;
+        this.gender = gender;
+        this.password = password;
+        this.birthday = birthday;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 
     public String getMail() {
