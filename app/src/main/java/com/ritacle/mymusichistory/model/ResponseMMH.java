@@ -5,11 +5,11 @@ import java.util.List;
 public class ResponseMMH<T> {
 
     private T object;
-    private List<String> errorMessages;
+    private List<InputError> errors;
 
-    public ResponseMMH(T object, List<String> errorMessages) {
+    public ResponseMMH(T object, List<InputError> errors) {
         this.object = object;
-        this.errorMessages = errorMessages;
+        this.errors = errors;
     }
 
     public T getObject() {
@@ -20,15 +20,15 @@ public class ResponseMMH<T> {
         this.object = object;
     }
 
-    public List<String> getErrorMessages() {
-        return errorMessages;
+    public List<InputError> getErrors() {
+        return errors;
     }
 
-    public void setErrorMessages(List<String> errorMessages) {
-        this.errorMessages = errorMessages;
+    public void setErrors(List<InputError> errors) {
+        this.errors = errors;
     }
 
     public boolean isOkay() {
-        return errorMessages.size() == 0;
+        return errors.size() == 0;
     }
 }
