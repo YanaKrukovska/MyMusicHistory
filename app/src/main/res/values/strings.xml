@@ -58,6 +58,7 @@
     <string name="login_input_name_hint">Email</string>
     <string name="login_input_password_hint">Password</string>
     <string name="login_button">Login</string>
+    <string name="action_log_out">Log out</string>
 
     <string-array name="gender_spinner">
         <item>Female</item>

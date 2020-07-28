@@ -45,16 +45,16 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        userNameField = (EditText) findViewById(R.id.input_name);
-        emailField = (EditText) findViewById(R.id.input_email);
-        passwordField = (EditText) findViewById(R.id.input_password);
-        confirmationPasswordField = (EditText) findViewById(R.id.input_reEnterPassword);
-        confirmationPasswordField = (EditText) findViewById(R.id.input_reEnterPassword);
-        genderField = (EditText) findViewById(R.id.input_gender);
-        nickNameField = (EditText) findViewById(R.id.input_nickName);
-        birthDateField = (EditText) findViewById(R.id.Birthday);
-        signUpButton = (Button) findViewById(R.id.btn_signup);
-        TextView loginLink = (TextView) findViewById(R.id.link_login);
+        userNameField = findViewById(R.id.input_name);
+        emailField = findViewById(R.id.input_email);
+        passwordField = findViewById(R.id.input_password);
+        confirmationPasswordField = findViewById(R.id.input_reEnterPassword);
+        confirmationPasswordField = findViewById(R.id.input_reEnterPassword);
+        genderField = findViewById(R.id.input_gender);
+        nickNameField = findViewById(R.id.input_nickName);
+        birthDateField = findViewById(R.id.Birthday);
+        signUpButton = findViewById(R.id.btn_signup);
+        TextView loginLink = findViewById(R.id.link_login);
 
         DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
             calendar.set(Calendar.YEAR, year);
@@ -108,14 +108,14 @@ public class SignUpActivity extends AppCompatActivity {
                         onSignUpSuccess();
                     }
                 } else {
-                    Log.d(TAG, "response body is fully");
+                    Log.d(TAG, "response body is empty");
                     onSignUpFailed();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseMMH<User>> call, @NonNull Throwable t) {
-                Log.d(TAG, "Failed to process");
+                Log.d(TAG, "failed to process");
                 onSignUpFailed();
             }
         });
@@ -130,10 +130,10 @@ public class SignUpActivity extends AppCompatActivity {
                     case "mail":
                         emailField.setError(error.getErrorMessage());
                         break;
-                    case "userName":
+                    case "username":
                         userNameField.setError(error.getErrorMessage());
                         break;
-                    case "nickName":
+                    case "nickname":
                         nickNameField.setError(error.getErrorMessage());
                         break;
                     case "gender":

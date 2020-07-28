@@ -17,7 +17,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity
         application = (MMHApplication) getApplication();
         application.startListenerService();
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = getSharedPreferences("login", MODE_PRIVATE);
         settings.registerOnSharedPreferenceChangeListener(this);
 
 //TODO: prevent exception when account name has not been defined yet during the first run
@@ -71,10 +70,14 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        String username = settings.getString("user_name", "User");
+        String username = settings.getString("userName", "User");
         View headerView = navigationView.getHeaderView(0);
-        TextView title = headerView.findViewById(R.id.usernameView);
-        title.setText(username);
+        TextView usernameTitle = headerView.findViewById(R.id.usernameView);
+        usernameTitle.setText(username);
+
+        String mail = settings.getString("mail", "");
+        TextView mailTitle = headerView.findViewById(R.id.mailView);
+        mailTitle.setText(mail);
 
 
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -145,6 +148,20 @@ public class MainActivity extends AppCompatActivity
                     SettingsActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_log_out) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Are you sure?")
+                    .setPositiveButton(
+                            android.R.string.yes,
+                            (dialog, whichButton) -> {
+                                application.logout();
+                                Intent intent = new Intent(this, LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                finish();
+                            })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -184,8 +201,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals("user_name")) {
-            String savedUsername = sharedPreferences.getString("user_name", "User");
+        if (key.equals("userName")) {
+            String savedUsername = sharedPreferences.getString("userName", "User");
             View headerView = navigationView.getHeaderView(0);
             TextView title = headerView.findViewById(R.id.usernameView);
             title.setText(savedUsername);
