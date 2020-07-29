@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
+import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
@@ -89,6 +90,11 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
     }
 
     private void registerSong(Song song) {
+        MMHApplication application = (MMHApplication) context.getApplicationContext();
+        if (!application.isLoggedIn()) {
+            return;
+        }
+
         Scrobble listen = new Scrobble();
         SharedPreferences sharedPreferences = context.getSharedPreferences("login", MODE_PRIVATE);
         User user = new User();

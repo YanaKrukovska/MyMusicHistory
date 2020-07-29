@@ -86,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void goToMainActivity() {
+        MMHApplication application = (MMHApplication) getApplication();
+        application.setLoggedIn();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
