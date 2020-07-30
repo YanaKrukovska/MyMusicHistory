@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -42,45 +41,42 @@ public class LoginActivity extends AppCompatActivity {
         passwordField = findViewById(R.id.login_password);
         mailField = findViewById(R.id.login_email);
         signUpButton = findViewById(R.id.link_signUp);
-
         sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
 
-        /*if (sharedPreferences.getBoolean("logged", false)) {
-           goToMainActivity();
-        }*/
+        MMHApplication application = (MMHApplication) getApplication();
+        if (application.isLoggedIn()) {
+            goToMainActivity();
+        }
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        loginButton.setOnClickListener(v -> {
 
-                if (!validate()) {
-                    loginFailed();
-                    return;
+            if (!validate()) {
+                loginFailed();
+                return;
+            }
+
+            GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<User> callUser = service.getUser(mailField.getText().toString());
+            callUser.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                    if (response.body() != null) {
+                        User user = response.body();
+                        Log.d(TAG, "Found user: " + user.toString());
+                        sharedPreferences.edit().putBoolean("logged", true).putString("userName", user.getUserName()).putString("mail", user.getMail()).putLong("user_id", user.getId()).apply();
+                        goToMainActivity();
+                    } else {
+                        Log.d(TAG, "User doesn't exist");
+                    }
                 }
 
-                GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-                Call<User> callUser = service.getUser(mailField.getText().toString());
-                callUser.enqueue(new Callback<User>() {
-                    @Override
-                    public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                        if (response.body() != null) {
-                            User user = response.body();
-                            Log.d(TAG, "Found user: " + user.toString());
-                            sharedPreferences.edit().putBoolean("logged", true).putString("userName", user.getUserName()).putString("mail", user.getMail()).putLong("user_id", user.getId()).apply();
-                            goToMainActivity();
-                        } else {
-                            Log.d(TAG, "User doesn't exist");
-                        }
-                    }
+                @Override
+                public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                    Log.d(TAG, "failed to process");
+                    loginFailed();
+                }
+            });
 
-                    @Override
-                    public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                        Log.d(TAG, "failed to process");
-                        loginFailed();
-                    }
-                });
-
-            }
         });
 
         signUpButton.setOnClickListener(v -> {
