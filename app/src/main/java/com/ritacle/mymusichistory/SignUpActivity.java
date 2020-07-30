@@ -18,6 +18,8 @@ import com.ritacle.mymusichistory.model.scrobbler_model.User;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 import com.ritacle.mymusichistory.network.UserRestService;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -176,7 +178,7 @@ public class SignUpActivity extends AppCompatActivity {
         boolean valid = true;
 
         String userName = userNameField.getText().toString();
-        if (userName.isEmpty() || userName.length() < 3) {
+        if (StringUtils.isAllBlank(userName) || userName.length() < 3) {
             userNameField.setError("Name must be at least 3 characters long");
             valid = false;
         } else {
@@ -184,7 +186,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         String nickName = nickNameField.getText().toString();
-        if (nickName.isEmpty()) {
+        if (StringUtils.isAllBlank(nickName)) {
             nickNameField.setError("Nickname can't be empty");
             valid = false;
         } else {
@@ -192,7 +194,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         String gender = genderField.getText().toString();
-        if (gender.isEmpty()) {
+        if (StringUtils.isAllBlank(gender)) {
             genderField.setError("Gender can't be empty");
             valid = false;
         } else {
@@ -200,7 +202,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         String email = emailField.getText().toString();
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (StringUtils.isAllBlank(email) || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailField.setError("Enter a valid email address");
             valid = false;
         } else {
@@ -208,7 +210,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         String password = passwordField.getText().toString();
-        if (password.isEmpty() || password.length() < 4) {
+        if (StringUtils.isAllBlank(password) || password.length() < 4) {
             passwordField.setError("Password must be longer than 4 characters");
             valid = false;
         } else {
@@ -216,7 +218,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         String confirmationPassword = confirmationPasswordField.getText().toString();
-        if (confirmationPassword.isEmpty() || confirmationPassword.length() < 4 || !(confirmationPassword.equals(password))) {
+        if (StringUtils.isAllBlank(confirmationPassword) || confirmationPassword.length() < 4 || !(confirmationPassword.equals(password))) {
             confirmationPasswordField.setError("Passwords do not match");
             valid = false;
         } else {
