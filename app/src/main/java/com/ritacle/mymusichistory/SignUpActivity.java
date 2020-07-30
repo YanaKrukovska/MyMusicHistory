@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,12 +36,13 @@ public class SignUpActivity extends AppCompatActivity {
 
     private EditText userNameField;
     private EditText nickNameField;
-    private EditText genderField;
     private EditText emailField;
     private EditText passwordField;
     private EditText confirmationPasswordField;
     private EditText birthDateField;
     private Button signUpButton;
+    private RadioButton lastGenderOptionButton;
+    String chosenGender;
     private final Calendar calendar = Calendar.getInstance();
 
     @Override
@@ -52,10 +55,10 @@ public class SignUpActivity extends AppCompatActivity {
         passwordField = findViewById(R.id.input_password);
         confirmationPasswordField = findViewById(R.id.input_reEnterPassword);
         confirmationPasswordField = findViewById(R.id.input_reEnterPassword);
-        genderField = findViewById(R.id.input_gender);
         nickNameField = findViewById(R.id.input_nickName);
         birthDateField = findViewById(R.id.Birthday);
         signUpButton = findViewById(R.id.btn_signup);
+        lastGenderOptionButton = findViewById(R.id.gender_secret_option);
         TextView loginLink = findViewById(R.id.link_login);
 
         DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
@@ -64,6 +67,20 @@ public class SignUpActivity extends AppCompatActivity {
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             updateLabel();
         };
+
+        RadioGroup genderGroup = findViewById(R.id.radioGroup);
+        genderGroup.getCheckedRadioButtonId();
+        genderGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.gender_female_option) {
+                chosenGender = "Female";
+            } else if (checkedId == R.id.gender_male_option) {
+                chosenGender = "Male";
+            } else if (checkedId == R.id.gender_other_option) {
+                chosenGender = "Other";
+            } else {
+                chosenGender = "Prefer not to tell";
+            }
+        });
 
         birthDateField.setOnClickListener(v -> new DatePickerDialog(SignUpActivity.this, date, calendar
                 .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
@@ -91,12 +108,13 @@ public class SignUpActivity extends AppCompatActivity {
         String name = userNameField.getText().toString();
         String nickname = nickNameField.getText().toString();
         String email = emailField.getText().toString();
-        String gender = genderField.getText().toString();
+        Log.d(TAG, "gender: " + chosenGender);
+
         String password = passwordField.getText().toString();
         Date birthDate = calendar.getTime();
 
         UserRestService service = RetrofitClientInstance.getRetrofitInstance().create(UserRestService.class);
-        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, gender, password, birthDate));
+        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, chosenGender, password, birthDate));
         callUser.enqueue(new Callback<ResponseMMH<User>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseMMH<User>> call, @NonNull Response<ResponseMMH<User>> responseMMH) {
@@ -139,7 +157,7 @@ public class SignUpActivity extends AppCompatActivity {
                         nickNameField.setError(error.getErrorMessage());
                         break;
                     case "gender":
-                        genderField.setError(error.getErrorMessage());
+                        lastGenderOptionButton.setError(error.getErrorMessage());
                         break;
                     case "birthDate":
                         birthDateField.setError(error.getErrorMessage());
@@ -193,12 +211,11 @@ public class SignUpActivity extends AppCompatActivity {
             nickNameField.setError(null);
         }
 
-        String gender = genderField.getText().toString();
-        if (StringUtils.isAllBlank(gender)) {
-            genderField.setError("Gender can't be empty");
+        if (StringUtils.isAllBlank(chosenGender)) {
+            lastGenderOptionButton.setError("Gender can't be empty");
             valid = false;
         } else {
-            genderField.setError(null);
+            lastGenderOptionButton.setError(null);
         }
 
         String email = emailField.getText().toString();

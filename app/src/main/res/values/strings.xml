@@ -59,6 +59,11 @@
     <string name="login_input_password_hint">Password</string>
     <string name="login_button">Login</string>
     <string name="action_log_out">Log out</string>
+    <string name="gender_radio_group_banner">Gender</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_other">Other</string>
+    <string name="gender_secret">Prefer not to tell</string>
 
     <string-array name="gender_spinner">
         <item>Female</item>

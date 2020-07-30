@@ -75,21 +75,50 @@
                 android:importantForAutofill="no" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/wallet_bright_foreground_disabled_holo_light"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="4dp"
+            android:textSize="18sp"
+            android:text="@string/gender_radio_group_banner">
+        </com.google.android.material.textview.MaterialTextView>
 
-            <EditText
-                android:id="@+id/input_gender"
-                android:layout_width="match_parent"
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/wallet_bright_foreground_disabled_holo_light"
+            android:orientation="vertical">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/gender_female_option"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/sign_up_input_gender_hint"
-                android:importantForAutofill="no"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="@string/gender_female" />
 
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/gender_male_option"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/gender_male" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/gender_other_option"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/gender_other" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/gender_secret_option"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/gender_secret" />
+
+
+        </RadioGroup>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
