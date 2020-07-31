@@ -1,31 +1,31 @@
 package com.ritacle.mymusichistory.model;
 
-public class TopArtist {
+import com.google.gson.annotations.SerializedName;
+
+public class TopAlbum {
+
     private Long id;
-    private String name;
+    private String album;
     private int listenCount;
+
+    @SerializedName("user")
     private String userMail;
 
-    public TopArtist() {
+    public TopAlbum() {
     }
 
-    public TopArtist(String name, int listenCount, String userMail) {
-        this.name = name;
+    public TopAlbum(String album, int listenCount, String userMail) {
+        this.album = album;
         this.listenCount = listenCount;
         this.userMail = userMail;
     }
 
-    public TopArtist(String artist, int listenCount) {
-        this.name = artist;
-        this.listenCount = listenCount;
+    public String getAlbum() {
+        return album;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setAlbum(String album) {
+        this.album = album;
     }
 
     public Long getId() {

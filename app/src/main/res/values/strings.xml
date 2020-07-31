@@ -13,6 +13,7 @@
     <string name="menu_listens">Listens</string>
     <string name="artist_name">artist name</string>
     <string name="song_title">song title</string>
+    <string name="album_title">album title</string>
     <string name="album_cover">album cover</string>
     <string name="listen_time">listen time</string>
     <string name="listen_count">listen count</string>
