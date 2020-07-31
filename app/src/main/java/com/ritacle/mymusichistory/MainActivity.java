@@ -22,6 +22,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.ritacle.mymusichistory.fragments.ListensFragment;
+import com.ritacle.mymusichistory.fragments.topAlbums.TopAlbumsMainFragment;
 import com.ritacle.mymusichistory.fragments.topArtists.TopArtistsMainFragment;
 import com.ritacle.mymusichistory.fragments.topSongs.TopSongsMainFragment;
 import com.ritacle.mymusichistory.service.ListenerService;
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity
             fragment = new TopArtistsMainFragment();
         }
         if (id == R.id.nav_top_albums) {
-            fragment = new TopAlbumsFragment();
+            fragment = new TopAlbumsMainFragment();
         }
         if (id == R.id.nav_top_songs) {
             fragment = new TopSongsMainFragment();
