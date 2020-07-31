@@ -1,9 +1,6 @@
 package com.ritacle.mymusichistory;
 
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -20,10 +17,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.PreferenceManager;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.AccountPicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -35,8 +29,6 @@ import com.ritacle.mymusichistory.service.ListenerService;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final int REQUEST_CODE_EMAIL = 1;
-    private String accountName;
     private FragmentTransaction fragmentTransaction;
     private NavigationView navigationView;
     private MMHApplication application;
@@ -51,15 +43,8 @@ public class MainActivity extends AppCompatActivity
         application = (MMHApplication) getApplication();
         application.startListenerService();
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = getSharedPreferences("login", MODE_PRIVATE);
         settings.registerOnSharedPreferenceChangeListener(this);
-
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        accountName = sharedPref.getString(getResources().getString(R.string.account_key), null);
-
-        if (accountName == null) {
-            getUser();
-        }
 
 //TODO: prevent exception when account name has not been defined yet during the first run
 
@@ -68,13 +53,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -85,10 +65,14 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        String username = settings.getString("user_name", "User");
+        String username = settings.getString("userName", "User");
         View headerView = navigationView.getHeaderView(0);
-        TextView title = headerView.findViewById(R.id.usernameView);
-        title.setText(username);
+        TextView usernameTitle = headerView.findViewById(R.id.usernameView);
+        usernameTitle.setText(username);
+
+        String mail = settings.getString("mail", "");
+        TextView mailTitle = headerView.findViewById(R.id.mailView);
+        mailTitle.setText(mail);
 
 
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -159,9 +143,21 @@ public class MainActivity extends AppCompatActivity
                     SettingsActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_log_out) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Are you sure?")
+                    .setPositiveButton(
+                            android.R.string.yes,
+                            (dialog, whichButton) -> {
+                                application.logout();
+                                Intent intent = new Intent(this, LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                finish();
+                            })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -197,36 +193,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void getUser() {
-
-        Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-                new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
-                false, null, null, null, null);
-        try {
-            startActivityForResult(intent, REQUEST_CODE_EMAIL);
-        } catch (ActivityNotFoundException e) {
-            // This device may not have Google Play Services installed.
-            // TODO: do something else
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_EMAIL && resultCode == RESULT_OK) {
-            accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            getPreferences(Context.MODE_PRIVATE).edit().putString(getResources().getString(R.string.account_key), accountName).apply();
-        }
-    }
-
-    public String getAccountName() {
-        return accountName;
-    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals("user_name")) {
-            String savedUsername = sharedPreferences.getString("user_name", "User");
+        if (key.equals("userName")) {
+            String savedUsername = sharedPreferences.getString("userName", "User");
             View headerView = navigationView.getHeaderView(0);
             TextView title = headerView.findViewById(R.id.usernameView);
             title.setText(savedUsername);

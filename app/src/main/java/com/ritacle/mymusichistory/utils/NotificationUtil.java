@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.MainActivity;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
@@ -36,6 +37,11 @@ public class NotificationUtil {
     }
 
     public void showListeningNowNotification(Song receivedSong, String status) {
+
+        MMHApplication application = (MMHApplication) context.getApplicationContext();
+        if (!application.isLoggedIn()) {
+            return;
+        }
 
         Intent clickIntent = new Intent(context, MainActivity.class);
         clickIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

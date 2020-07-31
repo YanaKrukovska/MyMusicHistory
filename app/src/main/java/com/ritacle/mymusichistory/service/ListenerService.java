@@ -2,7 +2,6 @@ package com.ritacle.mymusichistory.service;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
@@ -42,11 +41,6 @@ public class ListenerService extends NotificationListenerService
     @Override
     public void onCreate() {
         Log.d(TAG, "NotificationListenerService started");
-
-        if (!NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName())) {
-            Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            startActivity(intent);
-        }
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         sharedPreferences = settings;
@@ -161,4 +155,6 @@ public class ListenerService extends NotificationListenerService
             playbackTracker.handleMetadataChange(controllerPackageName, metadata);
         }
     }
+
+
 }

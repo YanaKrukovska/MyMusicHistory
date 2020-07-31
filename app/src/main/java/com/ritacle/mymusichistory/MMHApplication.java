@@ -2,15 +2,15 @@ package com.ritacle.mymusichistory;
 
 import android.app.Application;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 
-import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.service.ListenerService;
-
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
+import com.ritacle.mymusichistory.utils.NotificationUtil;
 
 public class MMHApplication extends Application {
+
+    public boolean isLoggedIn;
 
     @Override
     public void onCreate() {
@@ -33,4 +33,32 @@ public class MMHApplication extends Application {
         }
     }
 
+    public void stopListenerService() {
+        stopService(new Intent(getApplicationContext(), ListenerService.class));
+    }
+
+    public void logout() {
+        SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
+        sharedPreferences.edit().putBoolean("logged", false).apply();
+        setLoggedOut();
+        cancelNotifications();
+        stopListenerService();
+    }
+
+    private void cancelNotifications() {
+        NotificationUtil notificationUtil = new NotificationUtil(this);
+        notificationUtil.hideListeningNowNotification();
+    }
+
+    public void setLoggedIn(){
+        isLoggedIn = true;
+    }
+
+    public void setLoggedOut(){
+        isLoggedIn = false;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
 }
