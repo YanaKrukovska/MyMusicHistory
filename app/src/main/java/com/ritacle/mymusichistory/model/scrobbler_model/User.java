@@ -12,34 +12,34 @@ public class User {
     private String nickName;
     private String gender;
     private String password;
-    private Date birthday;
+    private Date birthDate;
     private Long id;
 
     public User() {
     }
 
-    public User(String mail, String userName, String password, Date birthday) {
+    public User(String mail, String userName, String password, Date birthDate) {
         this.mail = mail;
         this.userName = userName;
         this.password = password;
-        this.birthday = birthday;
+        this.birthDate = birthDate;
     }
 
-    public User(String mail, String userName, String nickName, String gender, String password, Date birthday) {
+    public User(String mail, String userName, String nickName, String gender, String password, Date birthDate) {
         this.mail = mail;
         this.userName = userName;
         this.nickName = nickName;
         this.gender = gender;
         this.password = password;
-        this.birthday = birthday;
+        this.birthDate = birthDate;
     }
 
-    public Date getBirthday() {
-        return birthday;
+    public Date getBirthDate() {
+        return birthDate;
     }
 
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getMail() {

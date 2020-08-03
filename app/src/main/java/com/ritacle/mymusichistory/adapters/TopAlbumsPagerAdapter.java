@@ -8,15 +8,14 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TopArtistsPagerAdapter extends FragmentPagerAdapter {
+public class TopAlbumsPagerAdapter extends FragmentPagerAdapter {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    public TopArtistsPagerAdapter(FragmentManager fm) {
+    public TopAlbumsPagerAdapter(FragmentManager fm) {
         super(fm);
     }
-
 
     @Override
     public Fragment getItem(int position) {

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,27 +20,24 @@ import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecorati
 import com.ritacle.mymusichistory.model.TopArtist;
 import com.ritacle.mymusichistory.network.GetDataService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
+import com.ritacle.mymusichistory.utils.EditTextDatePicker;
 
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.ritacle.mymusichistory.utils.DataUtils.addDays;
-import static com.ritacle.mymusichistory.utils.DataUtils.convertToString;
+public class CustomTopArtistsFragment extends Fragment implements View.OnClickListener {
 
-public class TopArtistsFragment extends Fragment {
-
-    private int timeShift;
     private String accountName;
     private SwipeRefreshLayout swipeToRefresh;
     private TopArtistsAdapter adapter;
     private RecyclerView rvTopArtists;
+    private EditTextDatePicker startDatePicker;
+    private EditTextDatePicker endDatePicker;
 
-    public TopArtistsFragment(int timeShift, String accountName) {
-        this.timeShift = timeShift;
+    public CustomTopArtistsFragment(String accountName) {
         this.accountName = accountName;
     }
 
@@ -52,32 +50,32 @@ public class TopArtistsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.top_artists, container, false);
+        View rootView = inflater.inflate(R.layout.custom_top_artists, container, false);
+
+        startDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.startDate);
+        endDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.endDate);
+        ImageButton searchButton = rootView.findViewById(R.id.button);
+        searchButton.setOnClickListener(this);
 
         rvTopArtists = rootView.findViewById(R.id.rvTopArtists);
         swipeToRefresh = rootView.findViewById(R.id.swipeToRefresh);
         swipeToRefresh.setColorSchemeResources(R.color.colorAccent);
 
-        swipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                addTopArtists();
-                swipeToRefresh.setRefreshing(false);
-            }
+        swipeToRefresh.setOnRefreshListener(() -> {
+            addTopArtists();
+            swipeToRefresh.setRefreshing(false);
         });
 
         addTopArtists();
+
         return rootView;
     }
 
     private void addTopArtists() {
-
-        final GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Date now = new Date();
-
+        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
         Call<List<TopArtist>> call = service.getUserTopArtists(accountName,
-                convertToString(addDays(now, timeShift)),
-                convertToString(now));
+                startDatePicker.returnDate(),
+                endDatePicker.returnDate());
         call.enqueue(new Callback<List<TopArtist>>() {
             @Override
             public void onResponse(@NonNull Call<List<TopArtist>> call, @NonNull Response<List<TopArtist>> response) {
@@ -92,5 +90,12 @@ public class TopArtistsFragment extends Fragment {
                 Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        addTopArtists();
     }
 }

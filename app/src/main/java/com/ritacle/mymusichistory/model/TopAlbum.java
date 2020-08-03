@@ -1,31 +1,37 @@
 package com.ritacle.mymusichistory.model;
 
-public class TopArtist {
-    private Long id;
-    private String name;
-    private int listenCount;
-    private String userMail;
+public class TopAlbum {
 
-    public TopArtist() {
+    private Long id;
+    private String albumName;
+    private String artist;
+    private String userMail;
+    private int listenCount;
+
+    public TopAlbum() {
     }
 
-    public TopArtist(String name, int listenCount, String userMail) {
-        this.name = name;
+    public TopAlbum(String album, String artist, int listenCount, String userMail) {
+        this.albumName = album;
+        this.artist = artist;
         this.listenCount = listenCount;
         this.userMail = userMail;
     }
 
-    public TopArtist(String artist, int listenCount) {
-        this.name = artist;
-        this.listenCount = listenCount;
+    public String getArtist() {
+        return artist;
     }
 
-    public String getName() {
-        return name;
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getAlbum() {
+        return albumName;
+    }
+
+    public void setAlbum(String album) {
+        this.albumName = album;
     }
 
     public Long getId() {

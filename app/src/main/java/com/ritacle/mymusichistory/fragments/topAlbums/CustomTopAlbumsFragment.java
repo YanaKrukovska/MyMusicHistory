@@ -1,4 +1,4 @@
-package com.ritacle.mymusichistory.fragments.topSongs;
+package com.ritacle.mymusichistory.fragments.topAlbums;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ritacle.mymusichistory.R;
-import com.ritacle.mymusichistory.adapters.TopSongsAdapter;
+import com.ritacle.mymusichistory.adapters.TopAlbumsAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
-import com.ritacle.mymusichistory.model.ListenAmount;
+import com.ritacle.mymusichistory.model.TopAlbum;
 import com.ritacle.mymusichistory.network.GetDataService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 import com.ritacle.mymusichistory.utils.EditTextDatePicker;
@@ -28,16 +28,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CustomTopSongsFragment extends Fragment implements View.OnClickListener {
+public class CustomTopAlbumsFragment extends Fragment implements View.OnClickListener {
 
     private String accountName;
     private SwipeRefreshLayout swipeToRefresh;
-    private TopSongsAdapter adapter;
-    private RecyclerView rvTopSongs;
+    private TopAlbumsAdapter adapter;
+    private RecyclerView rvTopAlbums;
     private EditTextDatePicker startDatePicker;
     private EditTextDatePicker endDatePicker;
 
-    public CustomTopSongsFragment(String accountName) {
+    public CustomTopAlbumsFragment(String accountName) {
         this.accountName = accountName;
     }
 
@@ -50,50 +50,50 @@ public class CustomTopSongsFragment extends Fragment implements View.OnClickList
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.custom_top_songs, container, false);
+        View rootView = inflater.inflate(R.layout.custom_top_albums, container, false);
 
         startDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.startDate);
         endDatePicker = new EditTextDatePicker(rootView, getContext(), R.id.endDate);
         ImageButton searchButton = rootView.findViewById(R.id.button);
         searchButton.setOnClickListener(this);
 
-        rvTopSongs = rootView.findViewById(R.id.rvTopSongs);
+        rvTopAlbums = rootView.findViewById(R.id.rvTopAlbums);
         swipeToRefresh = rootView.findViewById(R.id.swipeToRefresh);
         swipeToRefresh.setColorSchemeResources(R.color.colorAccent);
 
         swipeToRefresh.setOnRefreshListener(() -> {
-            addTopSongs();
+            addTopAlbums();
             swipeToRefresh.setRefreshing(false);
         });
-        addTopSongs();
+
+        addTopAlbums();
+
         return rootView;
     }
 
-    private void addTopSongs() {
+    private void addTopAlbums() {
         GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<List<ListenAmount>> call = service.getUserTopListens(accountName,
+        Call<List<TopAlbum>> call = service.getUserTopAlbums(accountName,
                 startDatePicker.returnDate(),
                 endDatePicker.returnDate());
-        call.enqueue(new Callback<List<ListenAmount>>() {
+        call.enqueue(new Callback<List<TopAlbum>>() {
             @Override
-            public void onResponse(@NonNull Call<List<ListenAmount>> call, @NonNull Response<List<ListenAmount>> response) {
-                adapter = new TopSongsAdapter(getContext(), response.body());
-                rvTopSongs.setAdapter(adapter);
-                rvTopSongs.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
-                rvTopSongs.setLayoutManager(new LinearLayoutManager(getActivity()));
+            public void onResponse(@NonNull Call<List<TopAlbum>> call, @NonNull Response<List<TopAlbum>> response) {
+                adapter = new TopAlbumsAdapter(getContext(), response.body());
+                rvTopAlbums.setAdapter(adapter);
+                rvTopAlbums.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
+                rvTopAlbums.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<ListenAmount>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<TopAlbum>> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
-
-
     }
 
     @Override
     public void onClick(View view) {
-        addTopSongs();
+        addTopAlbums();
     }
 }

@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ritacle.mymusichistory.R;
-import com.ritacle.mymusichistory.model.ListenAmount;
 import com.ritacle.mymusichistory.model.TopArtist;
 
 import java.util.List;
@@ -64,7 +63,7 @@ public class TopArtistsAdapter extends RecyclerView.Adapter<TopArtistsAdapter.Vi
 
         TopArtist topArtists = this.topArtists.get(position);
 
-        holder.artistTextView.setText(topArtists.getArtist());
+        holder.artistTextView.setText(topArtists.getName());
         holder.listenCountView.setText(topArtists.getListenCount() + " listens");
 
     }

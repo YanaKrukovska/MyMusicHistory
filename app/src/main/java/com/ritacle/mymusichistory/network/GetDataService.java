@@ -2,6 +2,7 @@ package com.ritacle.mymusichistory.network;
 
 import com.ritacle.mymusichistory.model.LastListen;
 import com.ritacle.mymusichistory.model.ListenAmount;
+import com.ritacle.mymusichistory.model.TopAlbum;
 import com.ritacle.mymusichistory.model.TopArtist;
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
 
@@ -21,6 +22,9 @@ public interface GetDataService {
 
     @GET("report/top/artists/{mail}/{startDate}/{endDate}")
     Call<List<TopArtist>> getUserTopArtists(@Path("mail") String mail, @Path("startDate") String startDate, @Path("endDate") String endDate);
+
+    @GET("report/top/albums/{mail}/{startDate}/{endDate}")
+    Call<List<TopAlbum>> getUserTopAlbums(@Path("mail") String mail, @Path("startDate") String startDate, @Path("endDate") String endDate);
 
     @GET("user/{mail}")
     Call<User> getUser(@Path("mail") String mail);

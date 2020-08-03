@@ -38,7 +38,6 @@
             android:focusable="true"
             android:textSize="15sp" />
 
-
         <ImageButton
             android:id="@+id/button"
             android:layout_width="40dp"
@@ -51,6 +50,6 @@
 
     </LinearLayout>
 
-    <include layout="@layout/top_songs" />
+    <include layout="@layout/top_artists" />
 
 </LinearLayout>
