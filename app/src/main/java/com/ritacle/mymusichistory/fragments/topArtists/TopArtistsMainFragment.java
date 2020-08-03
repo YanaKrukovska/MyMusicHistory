@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -22,13 +23,8 @@ import static com.ritacle.mymusichistory.utils.DataUtils.daysBetween;
 
 public class TopArtistsMainFragment extends Fragment {
 
-    private TopArtistsPagerAdapter pagerAdapter;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private String MAIL;
-
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -37,12 +33,12 @@ public class TopArtistsMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("login", MODE_PRIVATE);
-        MAIL = sharedPreferences.getString("mail", "");
+        String MAIL = sharedPreferences.getString("mail", "");
         View rootView = inflater.inflate(R.layout.top_artists_main, container, false);
 
-        viewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
-        pagerAdapter = new TopArtistsPagerAdapter(getChildFragmentManager());
+        ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
+        TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
+        TopArtistsPagerAdapter pagerAdapter = new TopArtistsPagerAdapter(getChildFragmentManager());
         pagerAdapter.addFragment(new TopArtistsFragment(-7, MAIL), "7 days");
         Date now = new Date();
         pagerAdapter.addFragment(new TopArtistsFragment(daysBetween(now, addMonth(now, -1)), MAIL), "one month");
@@ -50,12 +46,11 @@ public class TopArtistsMainFragment extends Fragment {
         pagerAdapter.addFragment(new TopArtistsFragment(daysBetween(now, addMonth(now, -6)), MAIL), "6 months");
         pagerAdapter.addFragment(new TopArtistsFragment(daysBetween(now, addMonth(now, -12)), MAIL), "12 months");
         pagerAdapter.addFragment(new TopArtistsFragment(daysBetween(now, addMonth(now, -120)), MAIL), "overall");
+        pagerAdapter.addFragment(new CustomTopArtistsFragment(MAIL), "custom date");
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
         return rootView;
     }
-
-
 }
