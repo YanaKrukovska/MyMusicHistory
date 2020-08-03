@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopSongsPagerAdapter;
@@ -21,12 +20,9 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.ritacle.mymusichistory.utils.DataUtils.addMonth;
 import static com.ritacle.mymusichistory.utils.DataUtils.daysBetween;
 
-
 public class TopSongsMainFragment extends Fragment {
 
-
     private TopSongsPagerAdapter pagerAdapter;
-    private AppBarLayout appBarLayout;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private String MAIL;
@@ -44,7 +40,6 @@ public class TopSongsMainFragment extends Fragment {
         MAIL = sharedPreferences.getString("mail", "");
 
         View rootView = inflater.inflate(R.layout.top_songs_main, container, false);
-        appBarLayout = (AppBarLayout) rootView.findViewById(R.id.appbarMain);
         viewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
         pagerAdapter = new TopSongsPagerAdapter(getChildFragmentManager());
@@ -60,9 +55,7 @@ public class TopSongsMainFragment extends Fragment {
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-
         return rootView;
     }
-
 
 }
