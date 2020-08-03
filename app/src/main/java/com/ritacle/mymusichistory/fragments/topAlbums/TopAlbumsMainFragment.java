@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopAlbumsPagerAdapter;
+import com.ritacle.mymusichistory.fragments.topArtists.CustomTopArtistsFragment;
 
 import java.util.Date;
 
@@ -50,6 +51,7 @@ public class TopAlbumsMainFragment extends Fragment {
         pagerAdapter.addFragment(new TopAlbumsFragment(daysBetween(now, addMonth(now, -6)), MAIL), "6 months");
         pagerAdapter.addFragment(new TopAlbumsFragment(daysBetween(now, addMonth(now, -12)), MAIL), "12 months");
         pagerAdapter.addFragment(new TopAlbumsFragment(daysBetween(now, addMonth(now, -120)), MAIL), "overall");
+        pagerAdapter.addFragment(new CustomTopAlbumsFragment(MAIL), "custom date");
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
