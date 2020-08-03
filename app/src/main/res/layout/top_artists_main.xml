@@ -16,10 +16,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/appbarMain"
-            app:tabBackground="@color/colorAccent"
+            app:tabBackground="@color/colorPrimary"
             app:tabMinWidth="150dp"
             app:tabMode="scrollable"
-            app:tabTextColor="@color/tabTextColor" />
+            app:tabIndicatorHeight="5dp"
+            app:tabIndicatorColor="@color/tabIndicatorColor" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager
