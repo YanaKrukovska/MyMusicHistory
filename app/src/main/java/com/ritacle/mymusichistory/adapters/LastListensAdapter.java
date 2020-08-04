@@ -1,9 +1,11 @@
 package com.ritacle.mymusichistory.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,16 +13,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.model.LastListen;
+import com.ritacle.mymusichistory.model.discogs_model.DiscogsResponse;
+import com.ritacle.mymusichistory.network.GetDataService;
+import com.ritacle.mymusichistory.network.RetrofitDiscogsClientInstance;
 import com.ritacle.mymusichistory.utils.DataUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.ViewHolder> {
 
     private List<LastListen> lastListens;
+    private static final String TAG = "Last Listens Adapter";
+    public Context context;
 
     public LastListensAdapter(Context context, List<LastListen> lastListens) {
-        Context context1 = context;
+        this.context = context;
         this.lastListens = lastListens;
     }
 
@@ -39,6 +51,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public TextView artistTextView;
         public TextView songTextView;
         public TextView timeTextView;
+        public ImageView imageView;
         public final View mView;
 
         public ViewHolder(View itemView) {
@@ -48,9 +61,9 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
             artistTextView = (TextView) itemView.findViewById(R.id.artistName);
             songTextView = (TextView) itemView.findViewById(R.id.songTitle);
             timeTextView = (TextView) itemView.findViewById(R.id.listenDate);
+            imageView = itemView.findViewById(R.id.imageIcon);
         }
     }
-
 
     @NonNull
     @Override
@@ -59,7 +72,6 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         View view = layoutInflater.inflate(R.layout.listen_item, parent, false);
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -70,8 +82,26 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         holder.songTextView.setText(lastListen.getTitle());
         holder.timeTextView.setText(DataUtils.convertToTimeLabel(lastListen.getDate()));
 
-    }
+        GetDataService service = RetrofitDiscogsClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<DiscogsResponse> callUser = service.getSongArtwork();
+        final String[] result = {""};
+        callUser.enqueue(new Callback<DiscogsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<DiscogsResponse> call, @NonNull Response<DiscogsResponse> response) {
+                if (response.body() != null) {
+                    Picasso.with(context).load(response.body().getResults()[0].getCover_image()).fit().into(holder.imageView);
+                } else {
+                    Log.d(TAG, "Artwork doesn't exist");
+                }
+            }
 
+            @Override
+            public void onFailure(@NonNull Call<DiscogsResponse> call, @NonNull Throwable t) {
+                Log.d(TAG, "failed to process");
+            }
+        });
+
+    }
 
     @Override
     public int getItemCount() {

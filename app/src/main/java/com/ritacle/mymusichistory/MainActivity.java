@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -27,14 +25,7 @@ import com.ritacle.mymusichistory.fragments.ListensFragment;
 import com.ritacle.mymusichistory.fragments.topAlbums.TopAlbumsMainFragment;
 import com.ritacle.mymusichistory.fragments.topArtists.TopArtistsMainFragment;
 import com.ritacle.mymusichistory.fragments.topSongs.TopSongsMainFragment;
-import com.ritacle.mymusichistory.model.discogs_model.DiscogsResponse;
-import com.ritacle.mymusichistory.network.GetDataService;
-import com.ritacle.mymusichistory.network.RetrofitDiscogsClientInstance;
 import com.ritacle.mymusichistory.service.ListenerService;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -88,24 +79,6 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, new ListensFragment());
         fragmentTransaction.commit();
-
-        GetDataService service = RetrofitDiscogsClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<DiscogsResponse> callUser = service.getSongArtwork();
-        callUser.enqueue(new Callback<DiscogsResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<DiscogsResponse> call, @NonNull Response<DiscogsResponse> response) {
-                if (response.body() != null) {
-                    Log.d(TAG, "Found artwork: " + response.body().getResults()[0].getCover_image());
-                } else {
-                    Log.d(TAG, "Artwork doesn't exist");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<DiscogsResponse> call, @NonNull Throwable t) {
-                Log.d(TAG, "failed to process");
-            }
-        });
 
 
       /*  Intent serviceIntent = new Intent(getApplicationContext(), ForegroundService.class);

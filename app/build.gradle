@@ -52,4 +52,5 @@ dependencies {
     implementation 'com.google.guava:guava:28.0-android'
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 }
