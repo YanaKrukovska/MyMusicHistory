@@ -1,5 +1,6 @@
 package com.ritacle.mymusichistory.network;
 
+import com.ritacle.mymusichistory.model.discogs_model.DiscogsResponse;
 import com.ritacle.mymusichistory.model.LastListen;
 import com.ritacle.mymusichistory.model.ListenAmount;
 import com.ritacle.mymusichistory.model.TopAlbum;
@@ -29,5 +30,7 @@ public interface GetDataService {
     @GET("user/{mail}")
     Call<User> getUser(@Path("mail") String mail);
 
+    @GET("search?token=KBZpGABXomzDFAyQiRlIgFULMluPFdQpmpOHthIO&release_title=folklore&artist=taylor%20swift&per_page=1&page=1")
+    Call<DiscogsResponse> getSongArtwork();
 
 }
