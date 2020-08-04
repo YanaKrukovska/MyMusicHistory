@@ -12,6 +12,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface GetDataService {
 
@@ -30,7 +31,7 @@ public interface GetDataService {
     @GET("user/{mail}")
     Call<User> getUser(@Path("mail") String mail);
 
-    @GET("search?token=KBZpGABXomzDFAyQiRlIgFULMluPFdQpmpOHthIO&release_title=folklore&artist=taylor%20swift&per_page=1&page=1")
-    Call<DiscogsResponse> getSongArtwork();
+    @GET("search?token=KBZpGABXomzDFAyQiRlIgFULMluPFdQpmpOHthIO&per_page=1&page=1")
+    Call<DiscogsResponse> getSongArtwork(@Query("artist") String artist, @Query("release_title") String releaseTitle);
 
 }

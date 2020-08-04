@@ -58,9 +58,9 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
 
             super(itemView);
             mView = itemView;
-            artistTextView = (TextView) itemView.findViewById(R.id.artistName);
-            songTextView = (TextView) itemView.findViewById(R.id.songTitle);
-            timeTextView = (TextView) itemView.findViewById(R.id.listenDate);
+            artistTextView = itemView.findViewById(R.id.artistName);
+            songTextView = itemView.findViewById(R.id.songTitle);
+            timeTextView = itemView.findViewById(R.id.listenDate);
             imageView = itemView.findViewById(R.id.imageIcon);
         }
     }
@@ -83,13 +83,16 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         holder.timeTextView.setText(DataUtils.convertToTimeLabel(lastListen.getDate()));
 
         GetDataService service = RetrofitDiscogsClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<DiscogsResponse> callUser = service.getSongArtwork();
-        final String[] result = {""};
+        String album = lastListen.getAlbum().replaceAll("'", "").replaceAll("(Deluxe)", "").replaceAll("(Deluxe Edition)", "");
+
+        Call<DiscogsResponse> callUser = service.getSongArtwork(lastListen.getArtist(), album);
         callUser.enqueue(new Callback<DiscogsResponse>() {
             @Override
             public void onResponse(@NonNull Call<DiscogsResponse> call, @NonNull Response<DiscogsResponse> response) {
-                if (response.body() != null) {
-                    Picasso.with(context).load(response.body().getResults()[0].getCover_image()).fit().into(holder.imageView);
+                if (response.body() != null && response.body().getResults() != null && response.body().getResults().length != 0) {
+                    if (response.body().getResults()[0].getCover_image() != null && !response.body().getResults()[0].getCover_image().isEmpty()) {
+                        Picasso.with(context).load(response.body().getResults()[0].getCover_image()).fit().into(holder.imageView);
+                    }
                 } else {
                     Log.d(TAG, "Artwork doesn't exist");
                 }
