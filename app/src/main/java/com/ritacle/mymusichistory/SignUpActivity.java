@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ritacle.mymusichistory.model.Country;
 import com.ritacle.mymusichistory.model.InputError;
 import com.ritacle.mymusichistory.model.ResponseMMH;
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
@@ -114,7 +115,7 @@ public class SignUpActivity extends AppCompatActivity {
         Date birthDate = calendar.getTime();
 
         UserRestService service = RetrofitClientInstance.getRetrofitInstance().create(UserRestService.class);
-        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, chosenGender, password, birthDate));
+        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, chosenGender, password, birthDate, new Country("Ukraine", "UA")));
         callUser.enqueue(new Callback<ResponseMMH<User>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseMMH<User>> call, @NonNull Response<ResponseMMH<User>> responseMMH) {
