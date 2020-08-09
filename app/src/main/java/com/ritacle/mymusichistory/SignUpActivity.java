@@ -4,10 +4,14 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -41,10 +47,14 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText passwordField;
     private EditText confirmationPasswordField;
     private EditText birthDateField;
+    private Spinner countrySpinner;
     private Button signUpButton;
     private RadioButton lastGenderOptionButton;
-    String chosenGender;
     private final Calendar calendar = Calendar.getInstance();
+    private List<Country> countries;
+    private List<String> fullCountryNames;
+    private String chosenGender;
+    private String chosenCountryName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,6 +93,31 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+
+        String[] isoCountryCodes = Locale.getISOCountries();
+        countries = new LinkedList<>();
+        fullCountryNames = new LinkedList<>();
+        for (String countryCode : isoCountryCodes) {
+            Locale locale = new Locale("", countryCode);
+            String countryName = locale.getDisplayCountry();
+            countries.add(new Country(countryName, countryCode));
+            fullCountryNames.add(countryName);
+        }
+
+        countrySpinner = findViewById(R.id.countries_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, fullCountryNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        countrySpinner.setAdapter(adapter);
+        countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent,
+                                       View itemSelected, int selectedItemPosition, long selectedId) {
+                chosenCountryName = fullCountryNames.get(selectedItemPosition);
+            }
+
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
         birthDateField.setOnClickListener(v -> new DatePickerDialog(SignUpActivity.this, date, calendar
                 .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)).show());
@@ -109,13 +144,12 @@ public class SignUpActivity extends AppCompatActivity {
         String name = userNameField.getText().toString();
         String nickname = nickNameField.getText().toString();
         String email = emailField.getText().toString();
-        Log.d(TAG, "gender: " + chosenGender);
-
+        Country country = findCountryByFullName(chosenCountryName);
         String password = passwordField.getText().toString();
         Date birthDate = calendar.getTime();
 
         UserRestService service = RetrofitClientInstance.getRetrofitInstance().create(UserRestService.class);
-        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, chosenGender, password, birthDate, new Country("Ukraine", "UA")));
+        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, chosenGender, password, birthDate, country));
         callUser.enqueue(new Callback<ResponseMMH<User>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseMMH<User>> call, @NonNull Response<ResponseMMH<User>> responseMMH) {
@@ -141,6 +175,16 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private Country findCountryByFullName(String chosenCountryName) {
+        for (int i = 0; i < countries.size(); i++) {
+            Country country = countries.get(i);
+            if (country.getFullName().equals(chosenCountryName)) {
+                return country;
+            }
+        }
+        return null;
     }
 
     private void setErrorMessages(@NonNull Response<ResponseMMH<User>> responseMMH) {
@@ -225,6 +269,10 @@ public class SignUpActivity extends AppCompatActivity {
             valid = false;
         } else {
             emailField.setError(null);
+        }
+
+        if (StringUtils.isAllBlank(chosenCountryName)) {
+            valid = false;
         }
 
         String password = passwordField.getText().toString();
