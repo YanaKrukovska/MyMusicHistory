@@ -65,6 +65,7 @@
     <string name="gender_male">Male</string>
     <string name="gender_other">Other</string>
     <string name="gender_secret">Prefer not to tell</string>
+    <string name="country_banner">Country</string>
 
     <string-array name="gender_spinner">
         <item>Female</item>

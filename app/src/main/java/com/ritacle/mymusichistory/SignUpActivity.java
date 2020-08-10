@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -47,8 +46,9 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText passwordField;
     private EditText confirmationPasswordField;
     private EditText birthDateField;
+    private TextView countryBanner;
+    private TextView genderBanner;
     private Button signUpButton;
-    private RadioButton lastGenderOptionButton;
     private final Calendar calendar = Calendar.getInstance();
     private List<Country> countries;
     private String chosenGender;
@@ -65,9 +65,10 @@ public class SignUpActivity extends AppCompatActivity {
         confirmationPasswordField = findViewById(R.id.input_reEnterPassword);
         confirmationPasswordField = findViewById(R.id.input_reEnterPassword);
         nickNameField = findViewById(R.id.input_nickName);
-        birthDateField = findViewById(R.id.Birthday);
+        birthDateField = findViewById(R.id.birthday_edit);
         signUpButton = findViewById(R.id.btn_signup);
-        lastGenderOptionButton = findViewById(R.id.gender_secret_option);
+        countryBanner = findViewById(R.id.country_banner);
+        genderBanner = findViewById(R.id.gender_banner);
         TextView loginLink = findViewById(R.id.link_login);
 
         DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
@@ -188,7 +189,10 @@ public class SignUpActivity extends AppCompatActivity {
                         nickNameField.setError(error.getErrorMessage());
                         break;
                     case "gender":
-                        lastGenderOptionButton.setError(error.getErrorMessage());
+                        genderBanner.setError(error.getErrorMessage());
+                        break;
+                    case "country":
+                        countryBanner.setError(error.getErrorMessage());
                         break;
                     case "birthDate":
                         birthDateField.setError(error.getErrorMessage());
@@ -243,10 +247,10 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         if (StringUtils.isAllBlank(chosenGender)) {
-            lastGenderOptionButton.setError("Gender can't be empty");
+            genderBanner.setError("Gender can't be empty");
             valid = false;
         } else {
-            lastGenderOptionButton.setError(null);
+            genderBanner.setError(null);
         }
 
         String email = emailField.getText().toString();
@@ -258,7 +262,10 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         if (chosenCountry == null) {
+            countryBanner.setError("Choose country");
             valid = false;
+        } else {
+            countryBanner.setError(null);
         }
 
         String password = passwordField.getText().toString();
