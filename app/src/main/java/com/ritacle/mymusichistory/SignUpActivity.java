@@ -47,14 +47,12 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText passwordField;
     private EditText confirmationPasswordField;
     private EditText birthDateField;
-    private Spinner countrySpinner;
     private Button signUpButton;
     private RadioButton lastGenderOptionButton;
     private final Calendar calendar = Calendar.getInstance();
     private List<Country> countries;
-    private List<String> fullCountryNames;
     private String chosenGender;
-    private String chosenCountryName;
+    private Country chosenCountry;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,22 +94,20 @@ public class SignUpActivity extends AppCompatActivity {
 
         String[] isoCountryCodes = Locale.getISOCountries();
         countries = new LinkedList<>();
-        fullCountryNames = new LinkedList<>();
         for (String countryCode : isoCountryCodes) {
             Locale locale = new Locale("", countryCode);
             String countryName = locale.getDisplayCountry();
             countries.add(new Country(countryName, countryCode));
-            fullCountryNames.add(countryName);
         }
 
-        countrySpinner = findViewById(R.id.countries_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, fullCountryNames);
+        Spinner countrySpinner = findViewById(R.id.countries_spinner);
+        ArrayAdapter<Country> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countries);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         countrySpinner.setAdapter(adapter);
         countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,
                                        View itemSelected, int selectedItemPosition, long selectedId) {
-                chosenCountryName = fullCountryNames.get(selectedItemPosition);
+                chosenCountry = countries.get(selectedItemPosition);
             }
 
             public void onNothingSelected(AdapterView<?> parent) {
@@ -144,7 +140,7 @@ public class SignUpActivity extends AppCompatActivity {
         String name = userNameField.getText().toString();
         String nickname = nickNameField.getText().toString();
         String email = emailField.getText().toString();
-        Country country = findCountryByFullName(chosenCountryName);
+        Country country = chosenCountry;
         String password = passwordField.getText().toString();
         Date birthDate = calendar.getTime();
 
@@ -175,16 +171,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private Country findCountryByFullName(String chosenCountryName) {
-        for (int i = 0; i < countries.size(); i++) {
-            Country country = countries.get(i);
-            if (country.getFullName().equals(chosenCountryName)) {
-                return country;
-            }
-        }
-        return null;
     }
 
     private void setErrorMessages(@NonNull Response<ResponseMMH<User>> responseMMH) {
@@ -271,7 +257,7 @@ public class SignUpActivity extends AppCompatActivity {
             emailField.setError(null);
         }
 
-        if (StringUtils.isAllBlank(chosenCountryName)) {
+        if (chosenCountry == null) {
             valid = false;
         }
 

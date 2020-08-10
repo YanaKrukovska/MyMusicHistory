@@ -33,6 +33,6 @@ public class Country {
 
     @Override
     public String toString() {
-        return "Country: full name = " + fullName + ", countryCode = " + countryCode;
+        return fullName;
     }
 }
