@@ -66,16 +66,19 @@
             android:layout_marginBottom="8dp">
 
             <EditText
-                android:id="@+id/Birthday"
+                android:id="@+id/birthday_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:hint="@string/sign_up_input_birthDate_hint"
-                android:importantForAutofill="no" />
+                android:importantForAutofill="no"
+                style="@android:style/Widget.EditText"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/gender_banner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/wallet_bright_foreground_disabled_holo_light"
@@ -83,6 +86,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="4dp"
             android:textSize="18sp"
+            style="@android:style/Widget.EditText"
             android:text="@string/gender_radio_group_banner">
         </com.google.android.material.textview.MaterialTextView>
 
@@ -91,7 +95,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/wallet_bright_foreground_disabled_holo_light"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="4dp">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/gender_female_option"
@@ -116,9 +123,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/gender_secret" />
-
-
         </RadioGroup>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/country_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/wallet_bright_foreground_disabled_holo_light"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="4dp"
+            android:textSize="18sp"
+            style="@android:style/Widget.EditText"
+            android:text="@string/country_banner">
+        </com.google.android.material.textview.MaterialTextView>
+
+        <Spinner
+            android:id="@+id/countries_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="4dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

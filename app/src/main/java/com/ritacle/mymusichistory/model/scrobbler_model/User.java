@@ -3,6 +3,8 @@ package com.ritacle.mymusichistory.model.scrobbler_model;
 
 import androidx.annotation.NonNull;
 
+import com.ritacle.mymusichistory.model.Country;
+
 import java.util.Date;
 
 public class User {
@@ -12,26 +14,23 @@ public class User {
     private String nickName;
     private String gender;
     private String password;
+    private String confirmationPassword;
     private Date birthDate;
     private Long id;
+    private Country country;
 
     public User() {
     }
 
-    public User(String mail, String userName, String password, Date birthDate) {
-        this.mail = mail;
-        this.userName = userName;
-        this.password = password;
-        this.birthDate = birthDate;
-    }
-
-    public User(String mail, String userName, String nickName, String gender, String password, Date birthDate) {
+    public User(String mail, String userName, String nickName, String gender, String password, String confirmationPassword, Date birthDate, Country country) {
         this.mail = mail;
         this.userName = userName;
         this.nickName = nickName;
         this.gender = gender;
         this.password = password;
+        this.confirmationPassword = confirmationPassword;
         this.birthDate = birthDate;
+        this.country = country;
     }
 
     public Date getBirthDate() {
@@ -90,14 +89,31 @@ public class User {
         this.password = password;
     }
 
+    public String getConfirmationPassword() {
+        return confirmationPassword;
+    }
+
+    public void setConfirmationPassword(String confirmationPassword) {
+        this.confirmationPassword = confirmationPassword;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
     @NonNull
     @Override
     public String toString() {
-        return "User {" + "mail='" + mail + '\'' +
-                ", userName='" + userName + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", gender='" + gender + '\'' +
-                ", password='" + password + '\'' +
+        return "User {" + "mail ='" + mail + '\'' +
+                ", userName ='" + userName + '\'' +
+                ", nickName ='" + nickName + '\'' +
+                ", gender ='" + gender + '\'' +
+                ", password ='" + password + '\'' +
+                ", country ='" + country + '\'' +
                 ", id=" + id +
                 '}';
     }
