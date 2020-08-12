@@ -82,13 +82,13 @@ public class SignUpActivity extends AppCompatActivity {
         genderGroup.getCheckedRadioButtonId();
         genderGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.gender_female_option) {
-                chosenGender = "Female";
+                chosenGender = "F";
             } else if (checkedId == R.id.gender_male_option) {
-                chosenGender = "Male";
+                chosenGender = "M";
             } else if (checkedId == R.id.gender_other_option) {
-                chosenGender = "Other";
+                chosenGender = "O";
             } else {
-                chosenGender = "Prefer not to tell";
+                chosenGender = "N";
             }
         });
 
@@ -143,10 +143,11 @@ public class SignUpActivity extends AppCompatActivity {
         String email = emailField.getText().toString();
         Country country = chosenCountry;
         String password = passwordField.getText().toString();
+        String confirmationPassword = confirmationPasswordField.getText().toString();
         Date birthDate = calendar.getTime();
 
         UserRestService service = RetrofitClientInstance.getRetrofitInstance().create(UserRestService.class);
-        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, chosenGender, password, birthDate, country));
+        Call<ResponseMMH<User>> callUser = service.addUser(new User(email, name, nickname, chosenGender, password, confirmationPassword, birthDate, country));
         callUser.enqueue(new Callback<ResponseMMH<User>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseMMH<User>> call, @NonNull Response<ResponseMMH<User>> responseMMH) {

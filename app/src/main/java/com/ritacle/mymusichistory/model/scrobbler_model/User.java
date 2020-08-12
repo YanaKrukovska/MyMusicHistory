@@ -14,6 +14,7 @@ public class User {
     private String nickName;
     private String gender;
     private String password;
+    private String confirmationPassword;
     private Date birthDate;
     private Long id;
     private Country country;
@@ -21,32 +22,16 @@ public class User {
     public User() {
     }
 
-    public User(String mail, String userName, String password, Date birthDate) {
-        this.mail = mail;
-        this.userName = userName;
-        this.password = password;
-        this.birthDate = birthDate;
-    }
-
-    public User(String mail, String userName, String nickName, String gender, String password, Date birthDate) {
+    public User(String mail, String userName, String nickName, String gender, String password, String confirmationPassword, Date birthDate, Country country) {
         this.mail = mail;
         this.userName = userName;
         this.nickName = nickName;
         this.gender = gender;
         this.password = password;
-        this.birthDate = birthDate;
-    }
-
-    public User(String mail, String userName, String nickName, String gender, String password, Date birthDate, Country country) {
-        this.mail = mail;
-        this.userName = userName;
-        this.nickName = nickName;
-        this.gender = gender;
-        this.password = password;
+        this.confirmationPassword = confirmationPassword;
         this.birthDate = birthDate;
         this.country = country;
     }
-
 
     public Date getBirthDate() {
         return birthDate;
@@ -102,6 +87,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirmationPassword() {
+        return confirmationPassword;
+    }
+
+    public void setConfirmationPassword(String confirmationPassword) {
+        this.confirmationPassword = confirmationPassword;
     }
 
     public Country getCountry() {
