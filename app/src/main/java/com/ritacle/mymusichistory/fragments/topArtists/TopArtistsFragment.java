@@ -17,7 +17,7 @@ import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopArtistsAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.TopArtist;
-import com.ritacle.mymusichistory.network.GetDataService;
+import com.ritacle.mymusichistory.network.ReportRestService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 
 import java.util.Date;
@@ -72,7 +72,7 @@ public class TopArtistsFragment extends Fragment {
 
     private void addTopArtists() {
 
-        final GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        final ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
         Date now = new Date();
 
         Call<List<TopArtist>> call = service.getUserTopArtists(accountName,

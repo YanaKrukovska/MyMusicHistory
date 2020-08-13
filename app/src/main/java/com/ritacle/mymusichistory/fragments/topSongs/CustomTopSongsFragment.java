@@ -18,7 +18,7 @@ import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopSongsAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.ListenAmount;
-import com.ritacle.mymusichistory.network.GetDataService;
+import com.ritacle.mymusichistory.network.ReportRestService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 import com.ritacle.mymusichistory.utils.EditTextDatePicker;
 
@@ -70,7 +70,7 @@ public class CustomTopSongsFragment extends Fragment implements View.OnClickList
     }
 
     private void addTopSongs() {
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
         Call<List<ListenAmount>> call = service.getUserTopListens(accountName,
                 startDatePicker.returnDate(),
                 endDatePicker.returnDate());

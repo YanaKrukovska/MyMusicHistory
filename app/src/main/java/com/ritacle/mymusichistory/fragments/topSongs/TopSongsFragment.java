@@ -13,12 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopSongsAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.ListenAmount;
-import com.ritacle.mymusichistory.network.GetDataService;
+import com.ritacle.mymusichistory.network.ReportRestService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 
 import java.util.Date;
@@ -74,7 +73,7 @@ public class TopSongsFragment extends Fragment {
     }
 
     private void addTopSongs() {
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
 
         Date now = new Date();
 

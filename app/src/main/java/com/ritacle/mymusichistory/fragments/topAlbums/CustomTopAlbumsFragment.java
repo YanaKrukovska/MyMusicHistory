@@ -18,7 +18,7 @@ import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopAlbumsAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.TopAlbum;
-import com.ritacle.mymusichistory.network.GetDataService;
+import com.ritacle.mymusichistory.network.ReportRestService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 import com.ritacle.mymusichistory.utils.EditTextDatePicker;
 
@@ -72,7 +72,7 @@ public class CustomTopAlbumsFragment extends Fragment implements View.OnClickLis
     }
 
     private void addTopAlbums() {
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
         Call<List<TopAlbum>> call = service.getUserTopAlbums(accountName,
                 startDatePicker.returnDate(),
                 endDatePicker.returnDate());
