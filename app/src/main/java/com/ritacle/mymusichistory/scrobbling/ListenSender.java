@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.service.StatisticRestService;
+import com.ritacle.mymusichistory.utils.NetworkUtil;
 
 import java.io.IOException;
 import java.util.Date;
@@ -81,7 +82,7 @@ public class ListenSender implements Callback<Scrobble> {
     @SuppressLint("LongLogTag")
     public void sendListen() {
         int listensListSize = listens.size();
-        if (hasNetworkConnection()) {
+        if (NetworkUtil.hasNetworkConnection(context)) {
 
             for (int i = 0; i < listensListSize; i++) {
                 Scrobble listen = null;
@@ -144,41 +145,6 @@ public class ListenSender implements Callback<Scrobble> {
             Log.d("SUCCESS: ", " Listen: " + listen.getSong().getTitle());
         }
         return false;
-    }
-
-
-    private boolean hasNetworkConnection() {
-
-        boolean isConnected = false;
-
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (cm != null) {
-                NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
-                if (capabilities != null) {
-                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                        isConnected = true;
-                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                        isConnected = true;
-                    }
-                }
-            }
-        } else {
-            Network[] networks;
-            if (cm != null) {
-                networks = cm.getAllNetworks();
-                for (Network network : networks) {
-                    NetworkInfo networkInfo = cm.getNetworkInfo(network);
-                    if ((networkInfo.getTypeName().equalsIgnoreCase("MOBILE")
-                            || (networkInfo.getTypeName().equalsIgnoreCase("WIFI"))) && networkInfo.isConnected()) {
-                        isConnected = true;
-                        break;
-                    }
-                }
-
-            }
-        }
-        return isConnected;
     }
 
     public void submit(Scrobble message) throws InterruptedException {
