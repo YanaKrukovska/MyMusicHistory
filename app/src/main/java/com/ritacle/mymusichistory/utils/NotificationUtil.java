@@ -6,20 +6,35 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.MainActivity;
 import com.ritacle.mymusichistory.R;
+import com.ritacle.mymusichistory.model.SongStatistic;
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
+import com.ritacle.mymusichistory.network.ReportRestService;
+import com.ritacle.mymusichistory.network.RetrofitClientInstance;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class NotificationUtil {
 
     private static final int NOW_PLAYING_ID = 0;
     private static final String CHANNEL_ID_NOW_LISTENING = "now_listening";
+    private static final String TAG = "Notification Util";
 
     private final Context context;
     private final NotificationManager notificationManager;
+    private int listenCount;
 
     public NotificationUtil(Context context) {
         this.context = context;
@@ -48,11 +63,37 @@ public class NotificationUtil {
         PendingIntent clickPendingIntent =
                 PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+        SharedPreferences sharedPreferences = application.getSharedPreferences("login", MODE_PRIVATE);
+        String mail = sharedPreferences.getString("mail", "");
+
+
+        ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
+        Call<SongStatistic> songStatisticsCall = service.getSongListenCount(mail, receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle());
+        songStatisticsCall.enqueue(new Callback<SongStatistic>() {
+            @Override
+            public void onResponse(@NonNull Call<SongStatistic> call, @NonNull Response<SongStatistic> response) {
+                if (response.body() != null) {
+                    SongStatistic songStatistic = response.body();
+                    Log.d(TAG, "Listen count of the song is: " + songStatistic.getListenCount());
+
+                    listenCount = songStatistic.getListenCount();
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SongStatistic> call, @NonNull Throwable t) {
+                Log.d(TAG, "failed to process");
+            }
+        });
+
+
         Notification.Builder notification =
                 new Notification.Builder(context)
                         .setSmallIcon(R.drawable.ic_logo_notif)
                         .setContentTitle(String.format("%s — %s", receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle()))
-                        .setContentText(status)
+                        .setSubText(status)
+                        .setContentText("test")
                         .setOngoing(false)
                         .setCategory(Notification.CATEGORY_STATUS)
                         .setContentIntent(clickPendingIntent);
