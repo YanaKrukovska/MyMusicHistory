@@ -58,56 +58,72 @@ public class NotificationUtil {
             return;
         }
 
+
+        if (NetworkUtil.hasNetworkConnection(context)) {
+            SharedPreferences sharedPreferences = application.getSharedPreferences("login", MODE_PRIVATE);
+            String mail = sharedPreferences.getString("mail", "");
+            ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
+            Call<SongStatistic> songStatisticsCall = service.getSongListenCount(mail, receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle());
+            songStatisticsCall.enqueue(new Callback<SongStatistic>() {
+                @Override
+                public void onResponse(@NonNull Call<SongStatistic> call, @NonNull Response<SongStatistic> response) {
+                    if (response.body() != null) {
+                        SongStatistic songStatistic = response.body();
+                        listenCount = songStatistic.getListenCount();
+                        Log.d(TAG, "Listen count of " + receivedSong.getTitle() + " is: " + listenCount);
+                    } else {
+                        listenCount = 0;
+                    }
+                    createNotification(receivedSong, listenCount, status);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<SongStatistic> call, @NonNull Throwable t) {
+                    Log.d(TAG, "failed to get listen count");
+                    listenCount = -1;
+                    createNotification(receivedSong, listenCount, status);
+                }
+            });
+        } else {
+            listenCount = -1;
+            createNotification(receivedSong, listenCount, status);
+        }
+
+    }
+
+    public void hideListeningNowNotification() {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
+    }
+
+    private void createNotification(Song receivedSong, int listenCount, String status) {
+
         Intent clickIntent = new Intent(context, MainActivity.class);
         clickIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent clickPendingIntent =
                 PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        SharedPreferences sharedPreferences = application.getSharedPreferences("login", MODE_PRIVATE);
-        String mail = sharedPreferences.getString("mail", "");
-
-
-        ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
-        Call<SongStatistic> songStatisticsCall = service.getSongListenCount(mail, receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle());
-        songStatisticsCall.enqueue(new Callback<SongStatistic>() {
-            @Override
-            public void onResponse(@NonNull Call<SongStatistic> call, @NonNull Response<SongStatistic> response) {
-                if (response.body() != null) {
-                    SongStatistic songStatistic = response.body();
-                    Log.d(TAG, "Listen count of the song is: " + songStatistic.getListenCount());
-
-                    listenCount = songStatistic.getListenCount();
-
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<SongStatistic> call, @NonNull Throwable t) {
-                Log.d(TAG, "failed to process");
-            }
-        });
-
 
         Notification.Builder notification =
                 new Notification.Builder(context)
                         .setSmallIcon(R.drawable.ic_logo_notif)
                         .setContentTitle(String.format("%s — %s", receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle()))
                         .setSubText(status)
-                        .setContentText("test")
                         .setOngoing(false)
-                        .setCategory(Notification.CATEGORY_STATUS)
-                        .setContentIntent(clickPendingIntent);
+                        .setCategory(Notification.CATEGORY_STATUS);
+        notification.setContentIntent(clickPendingIntent);
 
+        if (listenCount > 0) {
+            notification.setContentText(listenCount + " listens");
+        } else if (listenCount == 0) {
+            notification.setContentText("This is your first listen!");
+        } else {
+            notification.setContentText("");
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notification.setChannelId(CHANNEL_ID_NOW_LISTENING);
         }
 
         notificationManager.notify(NOW_PLAYING_ID, notification.build());
-    }
-
-    public void hideListeningNowNotification() {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(0);
     }
 
 }
