@@ -13,7 +13,7 @@ import java.util.TimerTask;
 public class PlayerState {
 
     private static final String TAG = "Player State";
-    public static final String LISTENING_STATUS = "listening...";
+    public static final String LISTENING_STATUS = "Listening...";
 
     private ListenRegistrar listenRegistrar;
     private PlaybackItem playbackItem;

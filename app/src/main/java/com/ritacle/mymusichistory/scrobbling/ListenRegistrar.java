@@ -80,7 +80,7 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
         for (int i = playbackItem.getPlaysScrobbled(); i < playCount; i++) {
             registerSong(song);
             playbackItem.addScrobble();
-            notificationUtil.showListeningNowNotification(song, "saved");
+            notificationUtil.showListeningNowNotification(song, "Saved");
         }
 
         if (newListens > 0) {
