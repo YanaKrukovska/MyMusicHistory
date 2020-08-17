@@ -18,7 +18,7 @@ import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.LastListensAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.LastListen;
-import com.ritacle.mymusichistory.network.GetDataService;
+import com.ritacle.mymusichistory.network.ReportRestService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 
 import java.util.List;
@@ -67,7 +67,7 @@ public class ListensFragment extends Fragment {
     }
 
     private void addListens() {
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("login", MODE_PRIVATE);
         Call<List<LastListen>> call = service.getSongReport(sharedPreferences.getString("mail", ""));
         call.enqueue(new Callback<List<LastListen>>() {

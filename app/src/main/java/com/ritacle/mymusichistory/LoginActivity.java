@@ -13,8 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
-import com.ritacle.mymusichistory.network.GetDataService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
+import com.ritacle.mymusichistory.network.UserRestService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            UserRestService service = RetrofitClientInstance.getRetrofitInstance().create(UserRestService.class);
             Call<User> callUser = service.getUser(mailField.getText().toString());
             callUser.enqueue(new Callback<User>() {
                 @Override

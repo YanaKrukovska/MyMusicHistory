@@ -18,7 +18,7 @@ import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.adapters.TopArtistsAdapter;
 import com.ritacle.mymusichistory.common.ui.decorators.SimpleDividerItemDecoration;
 import com.ritacle.mymusichistory.model.TopArtist;
-import com.ritacle.mymusichistory.network.GetDataService;
+import com.ritacle.mymusichistory.network.ReportRestService;
 import com.ritacle.mymusichistory.network.RetrofitClientInstance;
 import com.ritacle.mymusichistory.utils.EditTextDatePicker;
 
@@ -72,7 +72,7 @@ public class CustomTopArtistsFragment extends Fragment implements View.OnClickLi
     }
 
     private void addTopArtists() {
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
         Call<List<TopArtist>> call = service.getUserTopArtists(accountName,
                 startDatePicker.returnDate(),
                 endDatePicker.returnDate());
