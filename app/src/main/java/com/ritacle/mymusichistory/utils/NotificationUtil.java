@@ -32,9 +32,11 @@ public class NotificationUtil {
     private static final String CHANNEL_ID_NOW_LISTENING = "now_listening";
     private static final String TAG = "Notification Util";
 
+    private static final String ONE_LISTEN_TEXT = " listen";
+    private static final String MULTIPLE_LISTEN_TEXT = " listens";
+
     private final Context context;
     private final NotificationManager notificationManager;
-    private int listenCount;
 
     public NotificationUtil(Context context) {
         this.context = context;
@@ -58,7 +60,6 @@ public class NotificationUtil {
             return;
         }
 
-
         if (NetworkUtil.hasNetworkConnection(context)) {
             SharedPreferences sharedPreferences = application.getSharedPreferences("login", MODE_PRIVATE);
             String mail = sharedPreferences.getString("mail", "");
@@ -69,24 +70,19 @@ public class NotificationUtil {
                 public void onResponse(@NonNull Call<SongStatistic> call, @NonNull Response<SongStatistic> response) {
                     if (response.body() != null) {
                         SongStatistic songStatistic = response.body();
-                        listenCount = songStatistic.getListenCount();
-                        Log.d(TAG, "Listen count of " + receivedSong.getTitle() + " is: " + listenCount);
-                    } else {
-                        listenCount = 0;
+                        Log.d(TAG, "Listen count of " + receivedSong.getTitle() + " is: " + songStatistic.getListenCount());
+                        createNotification(receivedSong, songStatistic.getListenCount(), status);
                     }
-                    createNotification(receivedSong, listenCount, status);
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<SongStatistic> call, @NonNull Throwable t) {
                     Log.d(TAG, "failed to get listen count");
-                    listenCount = -1;
-                    createNotification(receivedSong, listenCount, status);
+                    createNotification(receivedSong, -1, status);
                 }
             });
         } else {
-            listenCount = -1;
-            createNotification(receivedSong, listenCount, status);
+            createNotification(receivedSong, -1, status);
         }
 
     }
@@ -107,18 +103,21 @@ public class NotificationUtil {
                 new Notification.Builder(context)
                         .setSmallIcon(R.drawable.ic_logo_notif)
                         .setContentTitle(String.format("%s — %s", receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle()))
-                        .setSubText(status)
                         .setOngoing(false)
                         .setCategory(Notification.CATEGORY_STATUS);
         notification.setContentIntent(clickPendingIntent);
 
         if (listenCount > 0) {
-            notification.setContentText(listenCount + " listens");
-        } else if (listenCount == 0) {
-            notification.setContentText("This is your first listen!");
+            if (listenCount == 1) {
+                notification.setContentText(listenCount + ONE_LISTEN_TEXT);
+            } else {
+                notification.setContentText(listenCount + MULTIPLE_LISTEN_TEXT);
+            }
+            notification.setSubText(status);
         } else {
-            notification.setContentText("");
+            notification.setContentText(status);
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notification.setChannelId(CHANNEL_ID_NOW_LISTENING);
         }

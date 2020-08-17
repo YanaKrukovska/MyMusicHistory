@@ -13,6 +13,7 @@ import java.util.TimerTask;
 public class PlayerState {
 
     private static final String TAG = "Player State";
+    public static final String LISTENING_STATUS = "listening...";
 
     private ListenRegistrar listenRegistrar;
     private PlaybackItem playbackItem;
@@ -35,7 +36,7 @@ public class PlayerState {
         if (isPlaying) {
             Log.d(TAG, "Song playing");
             playbackItem.startPlaying();
-            notificationUtil.showListeningNowNotification(playbackItem.getSong(), "listening");
+            notificationUtil.showListeningNowNotification(playbackItem.getSong(), LISTENING_STATUS);
             scheduleSubmission();
         } else {
             Log.d(TAG, String.format("Track paused (state %d)", state));
@@ -68,7 +69,7 @@ public class PlayerState {
         }
 
         if (isPlaying) {
-            notificationUtil.showListeningNowNotification(song, "listening");
+            notificationUtil.showListeningNowNotification(song, LISTENING_STATUS);
             playbackItem.startPlaying();
             scheduleSubmission();
         }
