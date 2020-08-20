@@ -1,10 +1,13 @@
 package com.ritacle.mymusichistory.adapters;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,8 +22,10 @@ import java.util.List;
 public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.ViewHolder> {
 
     private List<LastListen> lastListens;
+    public Context context;
 
-    public LastListensAdapter(List<LastListen> lastListens) {
+    public LastListensAdapter(Context context, List<LastListen> lastListens) {
+        this.context = context;
         this.lastListens = lastListens;
     }
 
@@ -50,7 +55,19 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
             songTextView = (TextView) itemView.findViewById(R.id.songTitle);
             timeTextView = (TextView) itemView.findViewById(R.id.listenDate);
             threeDotsMenu = (ImageView) itemView.findViewById(R.id.listenThreeDotsMenu);
-            threeDotsMenu.setOnClickListener(view -> Log.d("LastListenAdapter", "want to delete listen id = " + listenId));
+            threeDotsMenu.setOnClickListener((View view) -> {
+                PopupMenu popupMenu = new PopupMenu(context, threeDotsMenu);
+                popupMenu.getMenuInflater().inflate(R.menu.last_listen_menu_popup, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener((MenuItem item) -> {
+                    if (item.getItemId() == R.id.last_listen_delete_item) {
+                        Log.d("LastListenAdapter", "want to de lete listen id = " + listenId);
+                        return true;
+                    }
+                    return false;
+                });
+                popupMenu.show();
+
+            });
         }
     }
 
