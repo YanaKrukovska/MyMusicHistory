@@ -1,9 +1,10 @@
 package com.ritacle.mymusichistory.adapters;
 
-import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,8 +20,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
 
     private List<LastListen> lastListens;
 
-    public LastListensAdapter(Context context, List<LastListen> lastListens) {
-        Context context1 = context;
+    public LastListensAdapter(List<LastListen> lastListens) {
         this.lastListens = lastListens;
     }
 
@@ -40,17 +40,19 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public TextView songTextView;
         public TextView timeTextView;
         public final View mView;
+        public ImageView threeDotsMenu;
+        public Long listenId;
 
         public ViewHolder(View itemView) {
-
             super(itemView);
             mView = itemView;
             artistTextView = (TextView) itemView.findViewById(R.id.artistName);
             songTextView = (TextView) itemView.findViewById(R.id.songTitle);
             timeTextView = (TextView) itemView.findViewById(R.id.listenDate);
+            threeDotsMenu = (ImageView) itemView.findViewById(R.id.listenThreeDotsMenu);
+            threeDotsMenu.setOnClickListener(view -> Log.d("LastListenAdapter", "want to delete listen id = " + listenId));
         }
     }
-
 
     @NonNull
     @Override
@@ -60,18 +62,14 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         return new ViewHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         LastListen lastListen = this.lastListens.get(position);
-
         holder.artistTextView.setText(lastListen.getArtist());
         holder.songTextView.setText(lastListen.getTitle());
         holder.timeTextView.setText(DataUtils.convertToTimeLabel(lastListen.getDate()));
-
+        holder.listenId = lastListen.getId();
     }
-
 
     @Override
     public int getItemCount() {

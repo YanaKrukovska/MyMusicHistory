@@ -30,23 +30,6 @@
         android:textSize="13sp" />
 
     <TextView
-        android:id="@+id/songTitle"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-
-        android:layout_toEndOf="@id/icon"
-        android:maxLines="1"
-        android:text="@string/song_title"
-        android:textSize="15sp"
-        android:textColor="@color/textDark"/>
-
-    <TextView
         android:id="@+id/listenDate"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
@@ -58,6 +41,32 @@
         android:layout_marginBottom="3dp"
         android:text="@string/listen_time"
         android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/songTitle"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+
+        android:layout_marginBottom="10dp"
+        android:layout_toEndOf="@id/icon"
+        android:maxLines="1"
+        android:text="@string/song_title"
+        android:textColor="@color/textDark"
+        android:textSize="15sp" />
+
+    <ImageButton
+        android:id="@+id/listenThreeDotsMenu"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="1dp"
+        android:layout_toEndOf="@id/songTitle"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_three_dots"
+        android:contentDescription="@string/three_dots_listen_menu_description" />
 
 
 </RelativeLayout>

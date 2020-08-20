@@ -66,6 +66,7 @@
     <string name="gender_other">Other</string>
     <string name="gender_secret">Prefer not to tell</string>
     <string name="country_banner">Country</string>
+    <string name="three_dots_listen_menu_description">Three Dots Listen Menu</string>
 
     <string-array name="gender_spinner">
         <item>Female</item>
