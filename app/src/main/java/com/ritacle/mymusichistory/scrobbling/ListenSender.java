@@ -3,10 +3,6 @@ package com.ritacle.mymusichistory.scrobbling;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
 
@@ -14,8 +10,9 @@ import androidx.annotation.RequiresApi;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ritacle.mymusichistory.model.ResponseMMH;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
-import com.ritacle.mymusichistory.service.StatisticRestService;
+import com.ritacle.mymusichistory.network.StatisticRestService;
 import com.ritacle.mymusichistory.utils.NetworkUtil;
 
 import java.io.IOException;
@@ -136,9 +133,9 @@ public class ListenSender implements Callback<Scrobble> {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
     private boolean sentToMMH(Scrobble listen) throws IOException {
-        Call<Scrobble> call = mmhRestAPI.addListenIntoStat(listen);
+        Call<ResponseMMH<Scrobble>> call = mmhRestAPI.addListenIntoStat(listen);
         Log.d("Server call started for: ", listen.toString());
-        Response<Scrobble> response = call.execute();
+        Response<ResponseMMH<Scrobble>> response = call.execute();
         if (!response.isSuccessful()) {
             Log.d("Server call was unsuccessful: ", "response CODE : " + response.code() + " Listen: " + listen.getSong().getTitle());
         } else {
