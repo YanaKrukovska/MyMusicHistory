@@ -1,5 +1,6 @@
 package com.ritacle.mymusichistory.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,6 +60,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public final View mView;
         public ImageView threeDotsMenu;
         public Long listenId;
+        public AlertDialog alertDialog;
 
         private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
         private final StatisticRestService mmhRestAPI;
@@ -89,28 +91,10 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                 popupMenu.setOnMenuItemClickListener((MenuItem item) -> {
                     switch (item.getItemId()) {
                         case R.id.last_listen_delete_item:
-                            Log.d(TAG, "Deleting listen id = " + listenId);
-
-                            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(listenId);
-                            call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
-                                @Override
-                                public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
-                                    Log.d(TAG, "Successfully deleted listen with id = " + listenId);
-                                    artistTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
-                                    timeTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
-                                    songTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenSongTitle));
-                                }
-
-                                @Override
-                                public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
-                                    Log.d(TAG, "Failed to delete listen");
-                                }
-                            });
+                            warnAboutListenDeletion();
                             break;
-
                         case R.id.last_listen_edit_item:
                             Log.d(TAG, "Editing listen id = " + listenId);
-
                             break;
                     }
                     return false;
@@ -118,6 +102,47 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                 popupMenu.show();
 
             });
+        }
+
+        private void performListenDeletion() {
+            Log.d(TAG, "Deleting listen id = " + listenId);
+            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(listenId);
+            call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
+                    Log.d(TAG, "Successfully deleted listen with id = " + listenId);
+                    artistTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
+                    timeTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
+                    songTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenSongTitle));
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
+                    Log.d(TAG, "Failed to delete listen");
+                }
+            });
+        }
+
+        private void warnAboutListenDeletion() {
+            if (alertDialog != null) {
+                alertDialog.dismiss();
+            }
+
+            alertDialog =
+                    new AlertDialog.Builder(context)
+                            .setTitle("Are you sure?")
+                            .setMessage("You can't bring the listen back once it's deleted")
+                            .setNegativeButton(
+                                    android.R.string.cancel,
+                                    (dialogInterface, i) -> {
+                                        Log.d(TAG, "Listen deletion cancelled");
+                                    })
+                            .setPositiveButton(
+                                    android.R.string.ok,
+                                    (dialogInterface, i) -> {
+                                        performListenDeletion();
+                                    })
+                            .show();
         }
     }
 
