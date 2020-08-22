@@ -134,14 +134,10 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                             .setMessage("You can't bring the listen back once it's deleted")
                             .setNegativeButton(
                                     android.R.string.cancel,
-                                    (dialogInterface, i) -> {
-                                        Log.d(TAG, "Listen deletion cancelled");
-                                    })
+                                    (dialogInterface, i) -> Log.d(TAG, "Listen deletion cancelled"))
                             .setPositiveButton(
                                     android.R.string.ok,
-                                    (dialogInterface, i) -> {
-                                        performListenDeletion();
-                                    })
+                                    (dialogInterface, i) -> performListenDeletion())
                             .show();
         }
     }
