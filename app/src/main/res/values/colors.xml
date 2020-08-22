@@ -16,4 +16,7 @@
 
     <color name="tabTextColor">#FFFFFF</color>
 
+    <color name="deletedListenSongTitle">#737A7A7A</color>
+    <color name="deletedListenArtistName">#4D7A7A7A</color>
+
     </resources>

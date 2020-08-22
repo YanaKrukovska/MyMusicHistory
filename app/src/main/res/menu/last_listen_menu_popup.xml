@@ -2,8 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/last_listen_edit_item"
+        android:orderInCategory="100"
+        android:title="@string/listen_edit_sign"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/last_listen_delete_item"
         android:orderInCategory="100"
         android:title="@string/listen_delete_sign"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 </menu>

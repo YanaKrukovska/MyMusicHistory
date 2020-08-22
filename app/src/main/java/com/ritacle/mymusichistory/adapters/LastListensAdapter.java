@@ -11,6 +11,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
@@ -66,8 +67,6 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public ViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
-
-
             artistTextView = itemView.findViewById(R.id.artistName);
             songTextView = itemView.findViewById(R.id.songTitle);
             timeTextView = itemView.findViewById(R.id.listenDate);
@@ -88,23 +87,31 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                 PopupMenu popupMenu = new PopupMenu(context, threeDotsMenu);
                 popupMenu.getMenuInflater().inflate(R.menu.last_listen_menu_popup, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener((MenuItem item) -> {
-                    if (item.getItemId() == R.id.last_listen_delete_item) {
-                        Log.d(TAG, "Deleting listen id = " + listenId);
+                    switch (item.getItemId()) {
+                        case R.id.last_listen_delete_item:
+                            Log.d(TAG, "Deleting listen id = " + listenId);
 
-                        Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(listenId);
-                        call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
-                            @Override
-                            public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
-                                Log.d(TAG, "Successfully deleted listen with id = " + listenId);
-                            }
+                            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(listenId);
+                            call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
+                                @Override
+                                public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
+                                    Log.d(TAG, "Successfully deleted listen with id = " + listenId);
+                                    artistTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
+                                    timeTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
+                                    songTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenSongTitle));
+                                }
 
-                            @Override
-                            public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
-                                Log.d(TAG, "Failed to delete listen");
-                            }
-                        });
+                                @Override
+                                public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
+                                    Log.d(TAG, "Failed to delete listen");
+                                }
+                            });
+                            break;
 
-                        return true;
+                        case R.id.last_listen_edit_item:
+                            Log.d(TAG, "Editing listen id = " + listenId);
+
+                            break;
                     }
                     return false;
                 });

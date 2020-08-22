@@ -22,6 +22,10 @@ public class Scrobble {
     public Scrobble() {
     }
 
+    public Scrobble(Song song) {
+        this.song = song;
+    }
+
     public User getUser() {
         return user;
     }
