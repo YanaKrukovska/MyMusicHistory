@@ -13,11 +13,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.model.LastListen;
+import com.ritacle.mymusichistory.model.ResponseMMH;
+import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
+import com.ritacle.mymusichistory.network.StatisticRestService;
 import com.ritacle.mymusichistory.utils.DataUtils;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.ViewHolder> {
 
@@ -48,19 +59,51 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public ImageView threeDotsMenu;
         public Long listenId;
 
+        private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
+        private final StatisticRestService mmhRestAPI;
+        private final String TAG = "LastListenAdapter";
+
         public ViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
-            artistTextView = (TextView) itemView.findViewById(R.id.artistName);
-            songTextView = (TextView) itemView.findViewById(R.id.songTitle);
-            timeTextView = (TextView) itemView.findViewById(R.id.listenDate);
-            threeDotsMenu = (ImageView) itemView.findViewById(R.id.listenThreeDotsMenu);
+
+
+            artistTextView = itemView.findViewById(R.id.artistName);
+            songTextView = itemView.findViewById(R.id.songTitle);
+            timeTextView = itemView.findViewById(R.id.listenDate);
+
+            Gson gson = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                    .create();
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
+
+            mmhRestAPI = retrofit.create(StatisticRestService.class);
+
+            threeDotsMenu = itemView.findViewById(R.id.listenThreeDotsMenu);
             threeDotsMenu.setOnClickListener((View view) -> {
                 PopupMenu popupMenu = new PopupMenu(context, threeDotsMenu);
                 popupMenu.getMenuInflater().inflate(R.menu.last_listen_menu_popup, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener((MenuItem item) -> {
                     if (item.getItemId() == R.id.last_listen_delete_item) {
-                        Log.d("LastListenAdapter", "want to de lete listen id = " + listenId);
+                        Log.d(TAG, "Deleting listen id = " + listenId);
+
+                        Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(listenId);
+                        call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
+                            @Override
+                            public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
+                                Log.d(TAG, "Successfully deleted listen with id = " + listenId);
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
+                                Log.d(TAG, "Failed to delete listen");
+                            }
+                        });
+
                         return true;
                     }
                     return false;
