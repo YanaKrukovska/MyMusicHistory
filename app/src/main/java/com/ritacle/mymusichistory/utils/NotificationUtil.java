@@ -37,6 +37,7 @@ public class NotificationUtil {
 
     private final Context context;
     private final NotificationManager notificationManager;
+    private Call<SongStatistic> songStatisticsCall;
 
     public NotificationUtil(Context context) {
         this.context = context;
@@ -64,7 +65,12 @@ public class NotificationUtil {
             SharedPreferences sharedPreferences = application.getSharedPreferences("login", MODE_PRIVATE);
             String mail = sharedPreferences.getString("mail", "");
             ReportRestService service = RetrofitClientInstance.getRetrofitInstance().create(ReportRestService.class);
-            Call<SongStatistic> songStatisticsCall = service.getSongListenCount(mail, receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle());
+
+            if (songStatisticsCall != null && songStatisticsCall.isExecuted()) {
+                songStatisticsCall.cancel();
+            }
+
+            songStatisticsCall = service.getSongListenCount(mail, receivedSong.getAlbum().getArtist().getName(), receivedSong.getTitle());
             songStatisticsCall.enqueue(new Callback<SongStatistic>() {
                 @Override
                 public void onResponse(@NonNull Call<SongStatistic> call, @NonNull Response<SongStatistic> response) {
