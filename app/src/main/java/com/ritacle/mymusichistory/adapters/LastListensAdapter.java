@@ -2,14 +2,17 @@ package com.ritacle.mymusichistory.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -60,6 +63,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public final View mView;
         public ImageView threeDotsMenu;
         public Long listenId;
+        public LastListen listen;
         public AlertDialog alertDialog;
 
         private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
@@ -95,6 +99,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                             break;
                         case R.id.last_listen_edit_item:
                             Log.d(TAG, "Editing listen id = " + listenId);
+                            openEditListenDialog();
                             break;
                     }
                     return false;
@@ -140,7 +145,34 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                                     (dialogInterface, i) -> performListenDeletion())
                             .show();
         }
+
+        private void openEditListenDialog() {
+            AlertDialog.Builder editDialogBuilder = new AlertDialog.Builder(context);
+            LayoutInflater mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View customLayout = mLayoutInflater.inflate(R.layout.edit_listen_dialog, null);
+
+            editDialogBuilder.setView(customLayout);
+            EditText editSong = customLayout.findViewById(R.id.editSongTitle);
+            editSong.setText(listen.getTitle());
+
+            EditText editAlbum = customLayout.findViewById(R.id.editAlbumTitle);
+            editAlbum.setText(listen.getAlbum());
+
+            EditText editArtist = customLayout.findViewById(R.id.editArtistName);
+            editArtist.setText(listen.getArtist());
+
+            editDialogBuilder.setPositiveButton("EDIT", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            AlertDialog dialog = editDialogBuilder.create();
+            dialog.show();
+        }
+
+
     }
+
 
     @NonNull
     @Override
@@ -157,6 +189,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         holder.songTextView.setText(lastListen.getTitle());
         holder.timeTextView.setText(DataUtils.convertToTimeLabel(lastListen.getDate()));
         holder.listenId = lastListen.getId();
+        holder.listen = lastListen;
     }
 
     @Override
