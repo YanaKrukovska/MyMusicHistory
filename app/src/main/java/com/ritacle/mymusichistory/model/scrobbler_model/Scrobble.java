@@ -19,11 +19,20 @@ public class Scrobble {
 
     private long syncId;
 
+    private long id;
+
     public Scrobble() {
     }
 
     public Scrobble(Song song) {
         this.song = song;
+    }
+
+    public Scrobble(User user, Song song, Date listenDate, long id) {
+        this.user = user;
+        this.song = song;
+        this.listenDate = listenDate;
+        this.id = id;
     }
 
     public User getUser() {
@@ -50,6 +59,13 @@ public class Scrobble {
         this.listenDate = listenDate;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getSyncId() {
         return syncId;

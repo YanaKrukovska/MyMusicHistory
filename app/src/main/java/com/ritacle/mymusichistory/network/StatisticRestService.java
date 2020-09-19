@@ -20,4 +20,6 @@ public interface StatisticRestService {
     @DELETE("api/listen/delete/{listenId}")
     Call<ResponseMMH<Scrobble>> deleteListen(@Path("listenId") Long listenId);
 
+    @POST("api/listen/edit")
+    Call<ResponseMMH<Scrobble>> editListen(@Body Scrobble listen);
 }

@@ -2,7 +2,7 @@ package com.ritacle.mymusichistory.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,7 +23,11 @@ import com.google.gson.GsonBuilder;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.model.LastListen;
 import com.ritacle.mymusichistory.model.ResponseMMH;
+import com.ritacle.mymusichistory.model.scrobbler_model.Album;
+import com.ritacle.mymusichistory.model.scrobbler_model.Artist;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
+import com.ritacle.mymusichistory.model.scrobbler_model.Song;
+import com.ritacle.mymusichistory.model.scrobbler_model.User;
 import com.ritacle.mymusichistory.network.StatisticRestService;
 import com.ritacle.mymusichistory.utils.DataUtils;
 
@@ -34,6 +38,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.ViewHolder> {
 
@@ -69,6 +75,9 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
         private final StatisticRestService mmhRestAPI;
         private final String TAG = "LastListenAdapter";
+        private EditText editSong;
+        private EditText editAlbum;
+        private EditText editArtist;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -152,25 +161,42 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
             final View customLayout = mLayoutInflater.inflate(R.layout.edit_listen_dialog, null);
 
             editDialogBuilder.setView(customLayout);
-            EditText editSong = customLayout.findViewById(R.id.editSongTitle);
+            editSong = customLayout.findViewById(R.id.editSongTitle);
             editSong.setText(listen.getTitle());
 
-            EditText editAlbum = customLayout.findViewById(R.id.editAlbumTitle);
+            editAlbum = customLayout.findViewById(R.id.editAlbumTitle);
             editAlbum.setText(listen.getAlbum());
 
-            EditText editArtist = customLayout.findViewById(R.id.editArtistName);
+            editArtist = customLayout.findViewById(R.id.editArtistName);
             editArtist.setText(listen.getArtist());
 
-            editDialogBuilder.setPositiveButton("EDIT", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
+            editDialogBuilder.setPositiveButton("EDIT", (dialog, which) -> sendCallForEditing());
             AlertDialog dialog = editDialogBuilder.create();
             dialog.show();
         }
 
+        private void sendCallForEditing() {
+            Log.d(TAG, "Editing listen id = " + listenId);
+            User user = new User();
+            SharedPreferences sharedPreferences = context.getSharedPreferences("login", MODE_PRIVATE);
+            user.setMail(sharedPreferences.getString("mail", ""));
+            user.setId(sharedPreferences.getLong("user_id", -1));
 
+            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.editListen(new Scrobble(user, new Song(editSong.getText().toString(), new Album(editAlbum.getText().toString(), new Artist(editArtist.getText().toString()))), listen.getDate(), listen.getId()));
+            call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
+                    Log.d(TAG, "Successfully edited listen with id = " + listen.getId());
+                    Toast.makeText(context, "Edited", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
+                    Log.d(TAG, "Failed to edit listen");
+                    Toast.makeText(context, "Failed to edit", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
 
