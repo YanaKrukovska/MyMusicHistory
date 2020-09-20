@@ -20,6 +20,11 @@ public class Song {
     public Song() {
     }
 
+    public Song(String title, Album album) {
+        this.title = title;
+        this.album = album;
+    }
+
     public Song(String title, Album album, long duration) {
         this.title = title;
         this.album = album;

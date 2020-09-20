@@ -69,6 +69,9 @@
     <string name="three_dots_listen_menu_description">Three Dots Listen Menu</string>
     <string name="listen_delete_sign">Delete</string>
     <string name="listen_edit_sign">Edit</string>
+    <string name="edit_listen_song">Song:</string>
+    <string name="edit_listen_album">Album:</string>
+    <string name="edit_listen_artist">Artist:</string>
 
     <string-array name="gender_spinner">
         <item>Female</item>

@@ -2,14 +2,17 @@ package com.ritacle.mymusichistory.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -20,7 +23,11 @@ import com.google.gson.GsonBuilder;
 import com.ritacle.mymusichistory.R;
 import com.ritacle.mymusichistory.model.LastListen;
 import com.ritacle.mymusichistory.model.ResponseMMH;
+import com.ritacle.mymusichistory.model.scrobbler_model.Album;
+import com.ritacle.mymusichistory.model.scrobbler_model.Artist;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
+import com.ritacle.mymusichistory.model.scrobbler_model.Song;
+import com.ritacle.mymusichistory.model.scrobbler_model.User;
 import com.ritacle.mymusichistory.network.StatisticRestService;
 import com.ritacle.mymusichistory.utils.DataUtils;
 
@@ -31,6 +38,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.ViewHolder> {
 
@@ -59,12 +68,15 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public TextView timeTextView;
         public final View mView;
         public ImageView threeDotsMenu;
-        public Long listenId;
+        public LastListen listen;
         public AlertDialog alertDialog;
 
         private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
         private final StatisticRestService mmhRestAPI;
         private final String TAG = "LastListenAdapter";
+        private EditText editSong;
+        private EditText editAlbum;
+        private EditText editArtist;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -94,7 +106,8 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                             warnAboutListenDeletion();
                             break;
                         case R.id.last_listen_edit_item:
-                            Log.d(TAG, "Editing listen id = " + listenId);
+                            Log.d(TAG, "Editing listen id = " + listen.getId());
+                            openEditListenDialog();
                             break;
                     }
                     return false;
@@ -105,12 +118,13 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         }
 
         private void performListenDeletion() {
-            Log.d(TAG, "Deleting listen id = " + listenId);
-            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(listenId);
+            long id = listen.getId();
+            Log.d(TAG, "Deleting listen id = " + id);
+            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(id);
             call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
-                    Log.d(TAG, "Successfully deleted listen with id = " + listenId);
+                    Log.d(TAG, "Successfully deleted listen with id = " + id);
                     artistTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
                     timeTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
                     songTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenSongTitle));
@@ -140,7 +154,55 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                                     (dialogInterface, i) -> performListenDeletion())
                             .show();
         }
+
+        private void openEditListenDialog() {
+            AlertDialog.Builder editDialogBuilder = new AlertDialog.Builder(context);
+            LayoutInflater mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View customLayout = mLayoutInflater.inflate(R.layout.edit_listen_dialog, null);
+
+            editDialogBuilder.setView(customLayout);
+            editSong = customLayout.findViewById(R.id.editSongTitle);
+            editSong.setText(listen.getTitle());
+
+            editAlbum = customLayout.findViewById(R.id.editAlbumTitle);
+            editAlbum.setText(listen.getAlbum());
+
+            editArtist = customLayout.findViewById(R.id.editArtistName);
+            editArtist.setText(listen.getArtist());
+
+            editDialogBuilder.setPositiveButton("EDIT", (dialog, which) -> sendCallForEditing());
+            AlertDialog dialog = editDialogBuilder.create();
+            dialog.show();
+        }
+
+        private void sendCallForEditing() {
+            long id = listen.getId();
+            Log.d(TAG, "Editing listen id = " + id);
+            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.editListen(new Scrobble(getUser(), new Song(editSong.getText().toString(), new Album(editAlbum.getText().toString(), new Artist(editArtist.getText().toString()))), listen.getDate(), id));
+            call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
+                    Log.d(TAG, "Successfully edited listen with id = " + id);
+                    Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
+                    Log.d(TAG, "Failed to edit listen");
+                    Toast.makeText(context, "Couldn't save the changes", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private User getUser() {
+            User user = new User();
+            SharedPreferences sharedPreferences = context.getSharedPreferences("login", MODE_PRIVATE);
+            user.setMail(sharedPreferences.getString("mail", ""));
+            user.setId(sharedPreferences.getLong("user_id", -1));
+            return user;
+        }
     }
+
 
     @NonNull
     @Override
@@ -156,7 +218,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         holder.artistTextView.setText(lastListen.getArtist());
         holder.songTextView.setText(lastListen.getTitle());
         holder.timeTextView.setText(DataUtils.convertToTimeLabel(lastListen.getDate()));
-        holder.listenId = lastListen.getId();
+        holder.listen = lastListen;
     }
 
     @Override
