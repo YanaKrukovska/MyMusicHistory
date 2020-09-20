@@ -68,7 +68,6 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public TextView timeTextView;
         public final View mView;
         public ImageView threeDotsMenu;
-        public Long listenId;
         public LastListen listen;
         public AlertDialog alertDialog;
 
@@ -107,7 +106,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                             warnAboutListenDeletion();
                             break;
                         case R.id.last_listen_edit_item:
-                            Log.d(TAG, "Editing listen id = " + listenId);
+                            Log.d(TAG, "Editing listen id = " + listen.getId());
                             openEditListenDialog();
                             break;
                     }
@@ -119,12 +118,13 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         }
 
         private void performListenDeletion() {
-            Log.d(TAG, "Deleting listen id = " + listenId);
-            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(listenId);
+            long id = listen.getId();
+            Log.d(TAG, "Deleting listen id = " + id);
+            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.deleteListen(id);
             call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
-                    Log.d(TAG, "Successfully deleted listen with id = " + listenId);
+                    Log.d(TAG, "Successfully deleted listen with id = " + id);
                     artistTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
                     timeTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
                     songTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenSongTitle));
@@ -176,26 +176,30 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         }
 
         private void sendCallForEditing() {
-            Log.d(TAG, "Editing listen id = " + listenId);
-            User user = new User();
-            SharedPreferences sharedPreferences = context.getSharedPreferences("login", MODE_PRIVATE);
-            user.setMail(sharedPreferences.getString("mail", ""));
-            user.setId(sharedPreferences.getLong("user_id", -1));
-
-            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.editListen(new Scrobble(user, new Song(editSong.getText().toString(), new Album(editAlbum.getText().toString(), new Artist(editArtist.getText().toString()))), listen.getDate(), listen.getId()));
+            long id = listen.getId();
+            Log.d(TAG, "Editing listen id = " + id);
+            Call<ResponseMMH<Scrobble>> call = mmhRestAPI.editListen(new Scrobble(getUser(), new Song(editSong.getText().toString(), new Album(editAlbum.getText().toString(), new Artist(editArtist.getText().toString()))), listen.getDate(), id));
             call.enqueue(new Callback<ResponseMMH<Scrobble>>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Response<ResponseMMH<Scrobble>> response) {
-                    Log.d(TAG, "Successfully edited listen with id = " + listen.getId());
-                    Toast.makeText(context, "Edited", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Successfully edited listen with id = " + id);
+                    Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
                     Log.d(TAG, "Failed to edit listen");
-                    Toast.makeText(context, "Failed to edit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Couldn't save the changes", Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+
+        private User getUser() {
+            User user = new User();
+            SharedPreferences sharedPreferences = context.getSharedPreferences("login", MODE_PRIVATE);
+            user.setMail(sharedPreferences.getString("mail", ""));
+            user.setId(sharedPreferences.getLong("user_id", -1));
+            return user;
         }
     }
 
@@ -214,7 +218,6 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         holder.artistTextView.setText(lastListen.getArtist());
         holder.songTextView.setText(lastListen.getTitle());
         holder.timeTextView.setText(DataUtils.convertToTimeLabel(lastListen.getDate()));
-        holder.listenId = lastListen.getId();
         holder.listen = lastListen;
     }
 
