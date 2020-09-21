@@ -152,4 +152,8 @@ public class ListenSender implements Callback<Scrobble> {
     public Scrobble take() throws InterruptedException {
         return listens.take();
     }
+
+    public void savePending() {
+
+    }
 }
