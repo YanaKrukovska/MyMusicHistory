@@ -5,16 +5,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 
+import com.ritacle.mymusichistory.db.PendingListensDB;
 import com.ritacle.mymusichistory.service.ListenerService;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
 
 public class MMHApplication extends Application {
 
     public boolean isLoggedIn;
+    private PendingListensDB pendingListensDB;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        pendingListensDB = PendingListensDB.getInstance(getApplicationContext());
     }
 
     @Override
@@ -50,15 +53,19 @@ public class MMHApplication extends Application {
         notificationUtil.hideListeningNowNotification();
     }
 
-    public void setLoggedIn(){
+    public void setLoggedIn() {
         isLoggedIn = true;
     }
 
-    public void setLoggedOut(){
+    public void setLoggedOut() {
         isLoggedIn = false;
     }
 
     public boolean isLoggedIn() {
         return isLoggedIn;
+    }
+
+    public PendingListensDB getPendingListensDB() {
+        return pendingListensDB;
     }
 }
