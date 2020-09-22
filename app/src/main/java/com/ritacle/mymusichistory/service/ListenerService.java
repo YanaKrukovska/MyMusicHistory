@@ -65,16 +65,17 @@ public class ListenerService extends NotificationListenerService
         List<MediaController> initialSessions = mediaSessionManager.getActiveSessions(componentName);
         onActiveSessionsChanged(initialSessions);
 
-        ConnectionStateMonitor connectionStateMonitor = new ConnectionStateMonitor();
+        ConnectionStateMonitor connectionStateMonitor = new ConnectionStateMonitor(listenSender);
         connectionStateMonitor.enable(getApplicationContext());
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             manager.registerDefaultNetworkCallback(connectionStateMonitor);
-        } else {
+        }
+     /*    else {
             NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver(listenSender);
             IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
             getApplicationContext().registerReceiver(networkStateReceiver, filter);
-        }
+        }*/
     }
 
 

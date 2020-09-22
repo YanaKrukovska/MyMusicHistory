@@ -19,6 +19,10 @@ public class PendingListenEntity {
     Long syncId;
 
     @Ignore
+    public PendingListenEntity() {
+    }
+
+    @Ignore
     public PendingListenEntity(String name, String album, String artist, String user, String listenDate, Long syncId) {
         this.song = name;
         this.album = album;
@@ -84,5 +88,13 @@ public class PendingListenEntity {
 
     public void setListenDate(String listenDate) {
         this.listenDate = listenDate;
+    }
+
+    public Long getSyncId() {
+        return syncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        this.syncId = syncId;
     }
 }
