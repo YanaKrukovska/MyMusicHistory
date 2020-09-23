@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ritacle.mymusichistory.MMHApplication;
+import com.ritacle.mymusichistory.db.PendingListenDao;
 import com.ritacle.mymusichistory.db.PendingListensDB;
 import com.ritacle.mymusichistory.model.ResponseMMH;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
@@ -30,15 +31,15 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.internal.EverythingIsNonNull;
 
-
 public class ListenSender implements Callback<Scrobble> {
 
     private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
+    private static final String TAG = "Listen Sender";
     private final StatisticRestService mmhRestAPI;
     private BlockingDeque<Scrobble> listens = new LinkedBlockingDeque<>();
     private Context context;
-    private MMHApplication mmhApplication;
     private PendingListensDB pendingListensDB;
+    private PendingListenDao pendingListenDao;
 
     public ListenSender(Context context) {
         this.context = context;
@@ -52,8 +53,9 @@ public class ListenSender implements Callback<Scrobble> {
                 .build();
 
         mmhRestAPI = retrofit.create(StatisticRestService.class);
-        this.mmhApplication = (MMHApplication) context.getApplicationContext();
+        MMHApplication mmhApplication = (MMHApplication) context.getApplicationContext();
         this.pendingListensDB = mmhApplication.getPendingListensDB();
+        this.pendingListenDao = pendingListensDB.pendingListenDao();
     }
 
 
@@ -102,23 +104,17 @@ public class ListenSender implements Callback<Scrobble> {
                             sentToMMH(listen);
                         } catch (IOException e) {
                             Log.d("Sending to server failed", e.getMessage());
-                           // listens.put(listen);
-                            pendingListensDB.pendingListenDao().insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
+                            pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
                         }
                     }
                 } catch (Exception e) {
-                    //listens.put(listen);
                     pendingListensDB.pendingListenDao().insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
                 }
             }
-
         } else {
             Log.d("Network was  unavailable at", new Date().toString());
         }
-
-
     }
-
 
     private boolean listenApplicableForSaving(Scrobble listen) throws IOException {
         Log.d("Checking listen sync: ", "" + listen.getUser().getId() + ":" + listen.getSyncId());
@@ -147,6 +143,7 @@ public class ListenSender implements Callback<Scrobble> {
         return false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void submit(Scrobble message) throws InterruptedException {
         listens.put(message);
         sendListen();
@@ -156,8 +153,10 @@ public class ListenSender implements Callback<Scrobble> {
         return listens.take();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void savePending() {
         List<Scrobble> pending = pendingListensDB.convertAllPendingListensToScrobbles();
+        pendingListensDB.clearAllTables();
 
         int pendingListSize = pending.size();
         if (pendingListSize == 0) {
@@ -169,12 +168,13 @@ public class ListenSender implements Callback<Scrobble> {
             Log.d("Processing pending", listen.getSong().getTitle());
 
             try {
+                pending.remove(listen);
                 if (listenApplicableForSaving(listen)) {
-                    Log.d("MMH", "Need be saved ");
+                    Log.d(TAG, "Saving listen " + listen.toString());
                     try {
                         sentToMMH(listen);
                     } catch (IOException e) {
-                        Log.d("Sending to server failed", e.getMessage());
+                        Log.d(TAG, e.getMessage());
                         pending.add(listen);
                     }
                 }
@@ -188,6 +188,5 @@ public class ListenSender implements Callback<Scrobble> {
                 pendingListensDB.pendingListenDao().insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(pending.get(i)));
             }
         }
-
     }
 }
