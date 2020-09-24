@@ -20,6 +20,7 @@ import com.ritacle.mymusichistory.utils.NetworkUtil;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -85,35 +86,38 @@ public class ListenSender implements Callback<Scrobble> {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
     public void sendListen() {
-        int listensListSize = listens.size();
         if (NetworkUtil.hasNetworkConnection(context)) {
-
-            for (int i = 0; i < listensListSize; i++) {
-                Scrobble listen = null;
-                try {
-                    listen = listens.take();
-                    Log.d("Processing ", listen.getSong().getTitle());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    if (listen != null && listenApplicableForSaving(listen)) {
-                        Log.d("MMH", "Need be saved ");
-                        try {
-                            sentToMMH(listen);
-                        } catch (IOException e) {
-                            Log.d("Sending to server failed", e.getMessage());
-                            pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
-                        }
+            Scrobble listen = takeListen();
+            try {
+                if (listen != null && listenApplicableForSaving(listen)) {
+                    Log.d("MMH", "Need be saved ");
+                    try {
+                        sentToMMH(listen);
+                    } catch (IOException e) {
+                        Log.d("Sending to server failed", e.getMessage());
+                        pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
                     }
-                } catch (Exception e) {
-                    pendingListensDB.pendingListenDao().insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
                 }
+            } catch (Exception e) {
+                pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
             }
+
         } else {
-            Log.d("Network was  unavailable at", new Date().toString());
+            Log.d("Network was unavailable at", new Date().toString());
+            Scrobble listen = takeListen();
+            pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
         }
+    }
+
+    private Scrobble takeListen() {
+        Scrobble listen = null;
+        try {
+            listen = listens.take();
+            Log.d("Processing ", listen.getSong().getTitle());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return listen;
     }
 
     private boolean listenApplicableForSaving(Scrobble listen) throws IOException {
@@ -156,6 +160,7 @@ public class ListenSender implements Callback<Scrobble> {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void savePending() {
         List<Scrobble> pending = pendingListensDB.convertAllPendingListensToScrobbles();
+        List<Scrobble> failedPending = new LinkedList<>();
         pendingListensDB.clearAllTables();
 
         int pendingListSize = pending.size();
@@ -166,26 +171,24 @@ public class ListenSender implements Callback<Scrobble> {
         for (int i = 0; i < pendingListSize; i++) {
             Scrobble listen = pending.get(i);
             Log.d("Processing pending", listen.getSong().getTitle());
-
             try {
-                pending.remove(listen);
                 if (listenApplicableForSaving(listen)) {
                     Log.d(TAG, "Saving listen " + listen.toString());
                     try {
                         sentToMMH(listen);
                     } catch (IOException e) {
                         Log.d(TAG, e.getMessage());
-                        pending.add(listen);
+                        failedPending.add(listen);
                     }
                 }
             } catch (Exception e) {
-                pending.add(listen);
+                failedPending.add(listen);
             }
         }
 
-        if (pending.size() != 0) {
-            for (int i = 0; i < pending.size(); i++) {
-                pendingListensDB.pendingListenDao().insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(pending.get(i)));
+        if (failedPending.size() != 0) {
+            for (int i = 0; i < failedPending.size(); i++) {
+                pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(failedPending.get(i)));
             }
         }
     }
