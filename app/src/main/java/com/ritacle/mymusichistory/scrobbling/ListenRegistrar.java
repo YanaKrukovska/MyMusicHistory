@@ -105,11 +105,7 @@ public class ListenRegistrar implements NavigationView.OnNavigationItemSelectedL
         setListenDateTime(listen);
         listen.setSyncId(new Random().nextLong());
 
-        try {
-            listenSender.submit(listen);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        listenSender.submit(listen);
     }
 
     private void setListenDateTime(Scrobble listen) {

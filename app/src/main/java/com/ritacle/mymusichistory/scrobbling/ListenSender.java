@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +35,6 @@ public class ListenSender implements Callback<Scrobble> {
     private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
     private static final String TAG = "Listen Sender";
     private final StatisticRestService mmhRestAPI;
-    private BlockingDeque<Scrobble> listens = new LinkedBlockingDeque<>();
     private Context context;
     private PendingListensDB pendingListensDB;
     private PendingListenDao pendingListenDao;
@@ -59,7 +56,6 @@ public class ListenSender implements Callback<Scrobble> {
         this.pendingListenDao = pendingListensDB.pendingListenDao();
     }
 
-
     @Override
     @EverythingIsNonNull
     public void onResponse(Call<Scrobble> call, Response<Scrobble> response) {
@@ -73,7 +69,6 @@ public class ListenSender implements Callback<Scrobble> {
             //    } catch (InterruptedException e) {
             //         Log.d("Thread was interrupted", "" + response.body().toString());
             //     }
-
         }
     }
 
@@ -85,9 +80,8 @@ public class ListenSender implements Callback<Scrobble> {
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
-    public void sendListen() {
+    public void sendListen(Scrobble listen) {
         if (NetworkUtil.hasNetworkConnection(context)) {
-            Scrobble listen = takeListen();
             try {
                 if (listen != null && listenApplicableForSaving(listen)) {
                     Log.d("MMH", "Need be saved ");
@@ -104,20 +98,8 @@ public class ListenSender implements Callback<Scrobble> {
 
         } else {
             Log.d("Network was unavailable at", new Date().toString());
-            Scrobble listen = takeListen();
             pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
         }
-    }
-
-    private Scrobble takeListen() {
-        Scrobble listen = null;
-        try {
-            listen = listens.take();
-            Log.d("Processing ", listen.getSong().getTitle());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return listen;
     }
 
     private boolean listenApplicableForSaving(Scrobble listen) throws IOException {
@@ -148,14 +130,10 @@ public class ListenSender implements Callback<Scrobble> {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void submit(Scrobble message) throws InterruptedException {
-        listens.put(message);
-        sendListen();
+    public void submit(Scrobble listen) {
+        sendListen(listen);
     }
 
-    public Scrobble take() throws InterruptedException {
-        return listens.take();
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void savePending() {
