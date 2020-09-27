@@ -2,7 +2,6 @@ package com.ritacle.mymusichistory.service;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
@@ -20,7 +19,6 @@ import androidx.preference.PreferenceManager;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.ritacle.mymusichistory.network.ConnectionStateMonitor;
-import com.ritacle.mymusichistory.network.NetworkStateReceiver;
 import com.ritacle.mymusichistory.scrobbling.ListenSender;
 import com.ritacle.mymusichistory.scrobbling.PlaybackTracker;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
@@ -65,7 +63,7 @@ public class ListenerService extends NotificationListenerService
         List<MediaController> initialSessions = mediaSessionManager.getActiveSessions(componentName);
         onActiveSessionsChanged(initialSessions);
 
-        ConnectionStateMonitor connectionStateMonitor = new ConnectionStateMonitor(listenSender);
+        ConnectionStateMonitor connectionStateMonitor = new ConnectionStateMonitor(getApplicationContext(), listenSender);
         connectionStateMonitor.enable(getApplicationContext());
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

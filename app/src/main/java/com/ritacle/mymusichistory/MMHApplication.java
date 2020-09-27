@@ -42,7 +42,7 @@ public class MMHApplication extends Application {
 
     public void logout() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
-        sharedPreferences.edit().putBoolean("logged", false).apply();
+        sharedPreferences.edit().clear().apply();
         setLoggedOut();
         cancelNotifications();
         stopListenerService();
