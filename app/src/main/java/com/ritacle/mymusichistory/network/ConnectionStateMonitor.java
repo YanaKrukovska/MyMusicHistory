@@ -1,21 +1,16 @@
 package com.ritacle.mymusichistory.network;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.scrobbling.ListenSender;
 
-import org.apache.commons.lang3.StringUtils;
-
-public class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback {
     final NetworkRequest networkRequest;
     private ListenSender listenSender;
     private static final String TAG = "Network Monitor";
@@ -28,9 +23,6 @@ public class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback 
                 .build();
         this.listenSender = listenSender;
         this.context = context;
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        settings.registerOnSharedPreferenceChangeListener(this);
     }
 
     public void enable(Context context) {
@@ -49,11 +41,4 @@ public class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback 
         }
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals("mail") && !StringUtils.isAllBlank(sharedPreferences.getString(key, ""))) {
-            Log.d(TAG, "shared preferences changed, saving pending listens");
-            listenSender.savePending();
-        }
-    }
 }

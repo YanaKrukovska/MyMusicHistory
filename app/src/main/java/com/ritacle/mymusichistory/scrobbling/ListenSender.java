@@ -17,6 +17,7 @@ import com.ritacle.mymusichistory.model.ResponseMMH;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.network.StatisticRestService;
 import com.ritacle.mymusichistory.utils.NetworkUtil;
+import com.ritacle.mymusichistory.utils.NotificationUtil;
 
 import java.io.IOException;
 import java.util.Date;
@@ -146,6 +147,9 @@ public class ListenSender implements Callback<Scrobble> {
             return;
         }
 
+        NotificationUtil notificationUtil = new NotificationUtil(context);
+        notificationUtil.showSavingPendingListensNotification();
+
         for (int i = 0; i < pendingListSize; i++) {
             Scrobble listen = pending.get(i);
             Log.d("Processing pending", listen.getSong().getTitle());
@@ -169,5 +173,8 @@ public class ListenSender implements Callback<Scrobble> {
                 pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(failedPending.get(i)));
             }
         }
+
+        notificationUtil.hideSavingPendingListensNotification();
+
     }
 }
