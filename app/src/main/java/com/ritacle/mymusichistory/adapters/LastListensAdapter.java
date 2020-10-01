@@ -30,6 +30,7 @@ import com.ritacle.mymusichistory.model.scrobbler_model.Song;
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
 import com.ritacle.mymusichistory.network.StatisticRestService;
 import com.ritacle.mymusichistory.utils.DataUtils;
+import com.ritacle.mymusichistory.utils.NetworkUtil;
 
 import java.util.List;
 
@@ -128,11 +129,13 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                     artistTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
                     timeTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenArtistName));
                     songTextView.setTextColor(ContextCompat.getColor(context, R.color.deletedListenSongTitle));
+                    Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<ResponseMMH<Scrobble>> call, @NonNull Throwable t) {
                     Log.d(TAG, "Failed to delete listen");
+                    Toast.makeText(context, "Deletion failed", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -140,6 +143,11 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         private void warnAboutListenDeletion() {
             if (alertDialog != null) {
                 alertDialog.dismiss();
+            }
+
+            if (!NetworkUtil.hasNetworkConnection(context)) {
+                Toast.makeText(context, "Not available offline", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             alertDialog =
@@ -156,6 +164,12 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         }
 
         private void openEditListenDialog() {
+
+            if (!NetworkUtil.hasNetworkConnection(context)) {
+                Toast.makeText(context, "Not available offline", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             AlertDialog.Builder editDialogBuilder = new AlertDialog.Builder(context);
             LayoutInflater mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View customLayout = mLayoutInflater.inflate(R.layout.edit_listen_dialog, null);
