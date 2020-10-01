@@ -22,9 +22,11 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="33dp"
-        android:layout_marginBottom="3dp"
         android:layout_marginEnd="100dp"
+        android:layout_marginBottom="3dp"
         android:layout_toEndOf="@id/icon"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="@string/artist_name"
         android:textSize="13sp" />
 
@@ -33,17 +35,18 @@
         android:id="@+id/albumTitle"
         android:layout_width="330dp"
         android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignWithParentIfMissing="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_toEndOf="@id/icon"
+        android:ellipsize="end"
         android:maxLines="1"
         android:text="@string/album_title"
-        android:textSize="15sp"
-        android:textColor="@color/textDark"/>
+        android:textColor="@color/textDark"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/listensCount"
