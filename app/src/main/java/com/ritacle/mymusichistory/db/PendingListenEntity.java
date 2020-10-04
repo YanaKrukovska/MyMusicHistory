@@ -4,8 +4,6 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import java.util.Date;
-
 @Entity(tableName = "pending_listens")
 public class PendingListenEntity {
 

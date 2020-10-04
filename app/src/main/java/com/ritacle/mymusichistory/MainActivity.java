@@ -18,9 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.ritacle.mymusichistory.fragments.ListensFragment;
 import com.ritacle.mymusichistory.fragments.topAlbums.TopAlbumsMainFragment;
 import com.ritacle.mymusichistory.fragments.topArtists.TopArtistsMainFragment;
@@ -47,15 +45,10 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences settings = getSharedPreferences("login", MODE_PRIVATE);
         settings.registerOnSharedPreferenceChangeListener(this);
 
-//TODO: prevent exception when account name has not been defined yet during the first run
-
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -75,27 +68,14 @@ public class MainActivity extends AppCompatActivity
         TextView mailTitle = headerView.findViewById(R.id.mailView);
         mailTitle.setText(mail);
 
-
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, new ListensFragment());
         fragmentTransaction.commit();
-
 
       /*  Intent serviceIntent = new Intent(getApplicationContext(), ForegroundService.class);
         //serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
         ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
 */
-
-   /*     RecyclerView rvListens = (RecyclerView) findViewById(R.id.rvListens);
-        ListenAdapter adapter = new ListenAdapter(listenService.getListens());
-        rvListens.setAdapter(adapter);
-        rvListens.addItemDecoration(new SimpleDividerItemDecoration(this));
-        rvListens.setLayoutManager(new LinearLayoutManager(this));
-*/
-
-        // ArrayAdapter<Listen> listAdapter = new ArrayAdapter<Listen>.createFromResource(getApplicationContext(),)
-        // listenHistoryView.setAdapter(listAdapter);
-
     }
 
     private void askForNotificationPermission() {

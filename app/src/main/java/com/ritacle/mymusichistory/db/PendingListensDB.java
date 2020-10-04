@@ -42,37 +42,31 @@ public abstract class PendingListensDB extends RoomDatabase {
         return sInstance;
     }
 
-    public List<Scrobble> convertAllPendingListensToScrobbles() {
-        List<PendingListenEntity> listensEntities = sInstance.pendingListenDao().loadAllListens();
+    public List<Scrobble> convertAllPendingListenEntitiesToScrobbles(List<PendingListenEntity> pendingListenEntities) {
         List<Scrobble> listensEntitiesConverted = new LinkedList<>();
-        SharedPreferences sharedPreferences = appContext.getSharedPreferences("login", MODE_PRIVATE);
 
-        for (int i = 0; i < listensEntities.size(); i++) {
-            PendingListenEntity entity = listensEntities.get(i);
-            Scrobble scrobble = new Scrobble();
-            scrobble.setSyncId(entity.getSyncId());
-            scrobble.setSong(new Song(entity.getSong(), new Album(entity.getAlbum(), new Artist(entity.artist))));
-            scrobble.setListenDate(DataUtils.convertFromStringWithTime(entity.getListenDate()));
-            scrobble.setSyncId(entity.getSyncId());
-
-            User user = new User();
-            user.setMail(sharedPreferences.getString("mail", ""));
-            user.setId(sharedPreferences.getLong("user_id", -1));
-
-            scrobble.setUser(user);
-            listensEntitiesConverted.add(scrobble);
+        for (int i = 0; i < pendingListenEntities.size(); i++) {
+            listensEntitiesConverted.add(convertPendingListenEntityToScrobble(pendingListenEntities.get(i)));
         }
 
         return listensEntitiesConverted;
     }
 
+    public Scrobble convertPendingListenEntityToScrobble(PendingListenEntity pendingListenEntity) {
 
-    public List<PendingListenEntity> convertScrobbleToPendingListenEntity(List<Scrobble> scrobbles) {
-        List<PendingListenEntity> result = new LinkedList<>();
-        for (int i = 0; i < scrobbles.size(); i++) {
-            result.add(convertScrobbleToPendingListenEntity(scrobbles.get(i)));
-        }
-        return result;
+        Scrobble scrobble = new Scrobble();
+        scrobble.setSyncId(pendingListenEntity.getSyncId());
+        scrobble.setSong(new Song(pendingListenEntity.getSong(), new Album(pendingListenEntity.getAlbum(), new Artist(pendingListenEntity.artist))));
+        scrobble.setListenDate(DataUtils.convertFromStringWithTime(pendingListenEntity.getListenDate()));
+        scrobble.setSyncId(pendingListenEntity.getSyncId());
+
+        User user = new User();
+        SharedPreferences sharedPreferences = appContext.getSharedPreferences("login", MODE_PRIVATE);
+        user.setMail(sharedPreferences.getString("mail", ""));
+        user.setId(sharedPreferences.getLong("user_id", -1));
+
+        scrobble.setUser(user);
+        return scrobble;
     }
 
     public PendingListenEntity convertScrobbleToPendingListenEntity(Scrobble scrobble) {

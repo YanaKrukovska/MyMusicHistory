@@ -1,12 +1,10 @@
 package com.ritacle.mymusichistory.scrobbling;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,7 +13,7 @@ import com.ritacle.mymusichistory.db.PendingListenDao;
 import com.ritacle.mymusichistory.db.PendingListensDB;
 import com.ritacle.mymusichistory.model.ResponseMMH;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
-import com.ritacle.mymusichistory.network.StatisticRestService;
+import com.ritacle.mymusichistory.network.ListenRestService;
 import com.ritacle.mymusichistory.utils.NetworkUtil;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
 
@@ -35,7 +33,7 @@ public class ListenSender implements Callback<Scrobble> {
 
     private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
     private static final String TAG = "Listen Sender";
-    private final StatisticRestService mmhRestAPI;
+    private final ListenRestService mmhRestAPI;
     private Context context;
     private PendingListensDB pendingListensDB;
     private PendingListenDao pendingListenDao;
@@ -51,7 +49,7 @@ public class ListenSender implements Callback<Scrobble> {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        mmhRestAPI = retrofit.create(StatisticRestService.class);
+        mmhRestAPI = retrofit.create(ListenRestService.class);
         MMHApplication mmhApplication = (MMHApplication) context.getApplicationContext();
         this.pendingListensDB = mmhApplication.getPendingListensDB();
         this.pendingListenDao = pendingListensDB.pendingListenDao();
@@ -61,25 +59,13 @@ public class ListenSender implements Callback<Scrobble> {
     @EverythingIsNonNull
     public void onResponse(Call<Scrobble> call, Response<Scrobble> response) {
 
-        if (response.isSuccessful()) {
-        } else {
-            //    Log.d("Sending response was unsuccessful: ", "" + response.code() + " "
-            //           + response.message() + " " + response.body().toString());
-            //     try {
-            //       listens.put(response.body());
-            //    } catch (InterruptedException e) {
-            //         Log.d("Thread was interrupted", "" + response.body().toString());
-            //     }
-        }
     }
 
     @Override
-    public void onFailure(Call<Scrobble> call, Throwable t) {
+    public void onFailure(Call<Scrobble> call, @NonNull Throwable t) {
         Log.d("Failed to send ", call.toString());
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
     public void sendListen(Scrobble listen) {
         if (NetworkUtil.hasNetworkConnection(context)) {
@@ -89,7 +75,9 @@ public class ListenSender implements Callback<Scrobble> {
                     try {
                         sentToMMH(listen);
                     } catch (IOException e) {
-                        Log.d("Sending to server failed", e.getMessage());
+                        if (e.getMessage() != null) {
+                            Log.d("Sending to server failed", e.getMessage());
+                        }
                         pendingListenDao.insertListen(pendingListensDB.convertScrobbleToPendingListenEntity(listen));
                     }
                 }
@@ -115,10 +103,8 @@ public class ListenSender implements Callback<Scrobble> {
         return !response.body();
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("LongLogTag")
-    private boolean sentToMMH(Scrobble listen) throws IOException {
+    private void sentToMMH(Scrobble listen) throws IOException {
         Call<ResponseMMH<Scrobble>> call = mmhRestAPI.addListenIntoStat(listen);
         Log.d("Server call started for: ", listen.toString());
         Response<ResponseMMH<Scrobble>> response = call.execute();
@@ -127,18 +113,14 @@ public class ListenSender implements Callback<Scrobble> {
         } else {
             Log.d("SUCCESS: ", " Listen: " + listen.getSong().getTitle());
         }
-        return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void submit(Scrobble listen) {
         sendListen(listen);
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void savePending() {
-        List<Scrobble> pending = pendingListensDB.convertAllPendingListensToScrobbles();
+        List<Scrobble> pending = pendingListensDB.convertAllPendingListenEntitiesToScrobbles(pendingListenDao.loadAllListens());
         List<Scrobble> failedPending = new LinkedList<>();
         pendingListensDB.clearAllTables();
 
@@ -159,7 +141,9 @@ public class ListenSender implements Callback<Scrobble> {
                     try {
                         sentToMMH(listen);
                     } catch (IOException e) {
-                        Log.d(TAG, e.getMessage());
+                        if (e.getMessage() != null) {
+                            Log.d(TAG, e.getMessage());
+                        }
                         failedPending.add(listen);
                     }
                 }

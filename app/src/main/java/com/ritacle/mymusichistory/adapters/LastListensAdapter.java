@@ -28,7 +28,7 @@ import com.ritacle.mymusichistory.model.scrobbler_model.Artist;
 import com.ritacle.mymusichistory.model.scrobbler_model.Scrobble;
 import com.ritacle.mymusichistory.model.scrobbler_model.Song;
 import com.ritacle.mymusichistory.model.scrobbler_model.User;
-import com.ritacle.mymusichistory.network.StatisticRestService;
+import com.ritacle.mymusichistory.network.ListenRestService;
 import com.ritacle.mymusichistory.utils.DataUtils;
 import com.ritacle.mymusichistory.utils.NetworkUtil;
 
@@ -73,7 +73,7 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
         public AlertDialog alertDialog;
 
         private static final String BASE_URL = "https://my-music-history.herokuapp.com/";
-        private final StatisticRestService mmhRestAPI;
+        private final ListenRestService mmhRestAPI;
         private final String TAG = "LastListenAdapter";
         private EditText editSong;
         private EditText editAlbum;
@@ -95,11 +95,11 @@ public class LastListensAdapter extends RecyclerView.Adapter<LastListensAdapter.
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
 
-            mmhRestAPI = retrofit.create(StatisticRestService.class);
+            mmhRestAPI = retrofit.create(ListenRestService.class);
 
             threeDotsMenu = itemView.findViewById(R.id.listenThreeDotsMenu);
             threeDotsMenu.setOnClickListener((View view) -> {
-                PopupMenu popupMenu = new PopupMenu(context, threeDotsMenu);
+                PopupMenu popupMenu = new PopupMenu(context, view);
                 popupMenu.getMenuInflater().inflate(R.menu.last_listen_menu_popup, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener((MenuItem item) -> {
                     switch (item.getItemId()) {

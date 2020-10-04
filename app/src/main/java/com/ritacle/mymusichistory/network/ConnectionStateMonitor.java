@@ -7,6 +7,8 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.ritacle.mymusichistory.MMHApplication;
 import com.ritacle.mymusichistory.scrobbling.ListenSender;
 
@@ -32,7 +34,7 @@ public class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback 
 
 
     @Override
-    public void onAvailable(Network network) {
+    public void onAvailable(@NonNull Network network) {
         MMHApplication mmhApplication = (MMHApplication) context;
         Log.d(TAG, "available");
         if (mmhApplication.isLoggedIn()) {
