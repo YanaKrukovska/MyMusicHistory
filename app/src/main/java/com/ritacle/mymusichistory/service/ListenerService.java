@@ -7,6 +7,7 @@ import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.service.notification.NotificationListenerService;
 import android.util.Log;
@@ -17,6 +18,7 @@ import androidx.preference.PreferenceManager;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
+import com.ritacle.mymusichistory.network.ConnectionStateMonitor;
 import com.ritacle.mymusichistory.scrobbling.ListenSender;
 import com.ritacle.mymusichistory.scrobbling.PlaybackTracker;
 import com.ritacle.mymusichistory.utils.NotificationUtil;
@@ -52,7 +54,6 @@ public class ListenerService extends NotificationListenerService
         listenSender = new ListenSender(getApplicationContext());
         playbackTracker = new PlaybackTracker(getApplicationContext(), notificationUtil, listenSender);
 
-
         MediaSessionManager mediaSessionManager =
                 (MediaSessionManager)
                         getApplicationContext().getSystemService(Context.MEDIA_SESSION_SERVICE);
@@ -61,7 +62,20 @@ public class ListenerService extends NotificationListenerService
         mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName);
         List<MediaController> initialSessions = mediaSessionManager.getActiveSessions(componentName);
         onActiveSessionsChanged(initialSessions);
+
+        ConnectionStateMonitor connectionStateMonitor = new ConnectionStateMonitor(getApplicationContext(), listenSender);
+        connectionStateMonitor.enable(getApplicationContext());
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            manager.registerDefaultNetworkCallback(connectionStateMonitor);
+        }
+     /*    else {
+            NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver(listenSender);
+            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            getApplicationContext().registerReceiver(networkStateReceiver, filter);
+        }*/
     }
+
 
     public static boolean isNotificationAccessEnabled(Context context) {
         return NotificationManagerCompat.getEnabledListenerPackages(context)

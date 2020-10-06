@@ -26,9 +26,11 @@
         android:layout_marginBottom="10dp"
         android:layout_toEndOf="@id/icon"
         android:maxLines="1"
+        android:ellipsize="end"
         android:text="@string/artist_name"
         android:textSize="15sp"
-        android:textColor="@color/textDark"/>
+        android:textColor="@color/textDark"
+        />
 
     <TextView
         android:id="@+id/listensCount"

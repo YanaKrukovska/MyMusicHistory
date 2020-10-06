@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
 
         MMHApplication application = (MMHApplication) getApplication();
-        if (application.isLoggedIn()) {
+        if (application.isLoggedIn() || isUserDataPreferencesSaved()) {
             goToMainActivity();
         }
 
@@ -84,6 +84,10 @@ public class LoginActivity extends AppCompatActivity {
             startActivityForResult(intent, REQUEST_SIGNUP);
             finish();
         });
+    }
+
+    private boolean isUserDataPreferencesSaved() {
+        return !StringUtils.isAllBlank(sharedPreferences.getString("mail", ""));
     }
 
     private void loginFailed() {

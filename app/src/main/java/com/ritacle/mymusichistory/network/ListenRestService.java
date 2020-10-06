@@ -10,7 +10,8 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface StatisticRestService {
+public interface ListenRestService {
+
     @POST("api/listen")
     Call<ResponseMMH<Scrobble>> addListenIntoStat(@Body Scrobble listen);
 

@@ -29,7 +29,9 @@ import static android.content.Context.MODE_PRIVATE;
 public class NotificationUtil {
 
     private static final int NOW_PLAYING_ID = 0;
+    private static final int SAVING_PENDING_ID = 1;
     private static final String CHANNEL_ID_NOW_LISTENING = "now_listening";
+    private static final String CHANNEL_ID_SAVING_PENDING = "saving_pending";
     private static final String TAG = "Notification Util";
 
     private static final String ONE_LISTEN_TEXT = " listen";
@@ -42,15 +44,25 @@ public class NotificationUtil {
     public NotificationUtil(Context context) {
         this.context = context;
         this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        createNotificationChannels();
+    }
+
+    private void createNotificationChannels() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-
             NotificationChannel nowListeningChannel =
                     new NotificationChannel(
                             CHANNEL_ID_NOW_LISTENING, "Currently playing song",
                             NotificationManager.IMPORTANCE_LOW);
 
             notificationManager.createNotificationChannel(nowListeningChannel);
+
+            NotificationChannel savingPendingListens =
+                    new NotificationChannel(
+                            CHANNEL_ID_SAVING_PENDING, "Saving pending listens",
+                            NotificationManager.IMPORTANCE_LOW);
+
+            notificationManager.createNotificationChannel(savingPendingListens);
         }
     }
 
@@ -95,7 +107,7 @@ public class NotificationUtil {
 
     public void hideListeningNowNotification() {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(0);
+        notificationManager.cancel(NOW_PLAYING_ID);
     }
 
     private void createNotification(Song receivedSong, int listenCount, String status) {
@@ -130,5 +142,32 @@ public class NotificationUtil {
 
         notificationManager.notify(NOW_PLAYING_ID, notification.build());
     }
+
+    public void showSavingPendingListensNotification() {
+        Intent clickIntent = new Intent(context, MainActivity.class);
+        clickIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent clickPendingIntent =
+                PendingIntent.getActivity(context, SAVING_PENDING_ID, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Notification.Builder notification =
+                new Notification.Builder(context)
+                        .setSmallIcon(R.drawable.ic_logo_notif)
+                        .setContentTitle("Saving pending listens")
+                        .setOngoing(false)
+                        .setCategory(Notification.CATEGORY_STATUS);
+        notification.setContentIntent(clickPendingIntent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notification.setChannelId(CHANNEL_ID_NOW_LISTENING);
+        }
+
+        notificationManager.notify(SAVING_PENDING_ID, notification.build());
+
+    }
+
+    public void hideSavingPendingListensNotification() {
+        notificationManager.cancel(SAVING_PENDING_ID);
+    }
+
 
 }
